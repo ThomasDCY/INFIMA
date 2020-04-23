@@ -2,26 +2,41 @@
 % Please edit documentation in R/compute_pseudocount.R
 \name{compute_pseudocount}
 \alias{compute_pseudocount}
-\title{Compute pseudocount prior}
+\title{Compute Pseudocount Prior}
 \usage{
-compute_pseudocount(raw_data = NULL, model_data = NULL, window = 1e+06)
+compute_pseudocount(raw_data = NULL, model_data = NULL)
 }
 \arguments{
-\item{raw_data}{The output from @seealso raw_input_data}
+\item{raw_data}{The output from \code{raw_input_data}}
 
-\item{model_data}{The output from @seealso model_input_data}
-
-\item{window}{The window around DO-eQTL marker contains candidate SNPs.
-Default = 1 Mbp}
+\item{model_data}{The output from  \code{model_input_data}}
 }
 \value{
-A list of data objects.
-PI: The pseudocount term.
-dist: The distance score.
-F.g: The footprint information.
-cor.A.R: correlation betwwen ATAC-seq signal and effect size.
-cor.A.E: correlation between ATAC-seq signal and gene expression.
+A list of lists: the same structure as \code{model_data}.
+
+\tabular{ll}{
+\code{PI} \tab The overall pseudocount term. \cr
+\code{dist} \tab The distance score. \cr
+\code{F.g} \tab The footprint annotation. \cr
+\code{cor.A.R} \tab The Correlation betwwen ATAC-seq signal and effect size. \cr
+\code{cor.A.E} \tab The Correlation between ATAC-seq signal and gene expression. \cr
+}
 }
 \description{
-Compute pseudocount prior
+For the candidate SNPs of each row of DO-eQTL data, 
+keep track of their the distance scores, footprinting annotations,
+correlations between local ATAC-seq signal and effect size,
+correlations between local ATAC-seq signal and gene expression.
+}
+\examples{
+data('example-10-genes')
+raw_data <- raw_input_data(dt1, dt2, dt3)
+model_data <- model_input_data(raw_data)
+pseudocount <- compute_pseudocount(raw_data, model_data)
+}
+\seealso{
+\code{\link{raw_input_data}}, \code{\link{model_input_data}}.
+}
+\author{
+Chenyang Dong \email{cdong@stat.wisc.edu}
 }

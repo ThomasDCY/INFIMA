@@ -1,6 +1,6 @@
 Package: INFIMA
-Title: INFIMA R package
-Version: 1.0
+Title: Integrative Fine-mapping with Model Organism 
+Version: 1.00
 Authors@R: 
     person(given = "Chenyang",
            family = "Dong",

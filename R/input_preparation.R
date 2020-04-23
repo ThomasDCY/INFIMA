@@ -71,10 +71,10 @@
 #' \code{snpData} \tab SNP information. \cr
 #' }
 #' @examples
-#' \dontrun{data('example-10-genes')
-#' raw_data <- raw_input_data(dt1, dt2, dt3)}
+#' data('example-10-genes')
+#' raw_data <- raw_input_data(dt1, dt2, dt3)
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
-#' @import data.table
+#' @rawNamespace import(data.table, except = shift)
 #' @export
 raw_input_data <- function(filename1 = NULL,
                            filename2 = NULL,
@@ -234,9 +234,36 @@ raw_input_data <- function(filename1 = NULL,
 }
 
 
-# Data matrix trinarization across 8 founder strains.
-# Setting B6 as the reference.
+
+#' @name data_trinarize
+#' @title Data matrix trinarization across 8 founder strains.
+#' @description This function trinarizes numeric matrix rowwisely
+#' to \{-1,0,1\}. The matrix should have 8 columns corresponding to
+#' 8 founder strains \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}.
+#' 
+#' First, each row of the matrix is standardized to [0,1].
+#' 
+#' Then, all values subtracted by the \code{B6} value in order to
+#' set \code{B6} as the reference.
+#' 
+#' Finally, anything larger than \code{cutoff} are transformed to 1.
+#' Anything smaller than -\code{cutoff} are transformed to -1.
+#' Anything between are transformed to 0.
+#' @param mat The numeric matrix with 8 columns.
+#' @param cutoff A value between 0 and 0.5. Default 0.2.
+#' @return A numeric matrix after trinarization.
+#' @author Chenyang Dong \email{cdong@stat.wisc.edu}
+#' @export
 data_trinarize <- function(mat, cutoff = 0.2) {
+  
+  if(ncol(mat) != 8){
+    stop('data_trinarize: The number of columns does not equal to 8!')
+  }
+  
+  if(cutoff <= 0 || cutoff >= 0.5){
+    stop('data_trinarize: cutoff parameter out of range (0, 0.5)!')
+  }
+  
   row.min <- apply(mat, 1, min)
   row.max <- apply(mat, 1, max)
   for (i in 1:8) {
@@ -254,34 +281,58 @@ data_trinarize <- function(mat, cutoff = 0.2) {
   return(mat)
 }
 
-#' Process the raw input data
+
+
+#' @name model_input_data
+#' @title Process the INFIMA inputs for each DO gene
+#' @description This function converts the raw input data into the data
+#' for each row of the DO-eQTL data. For each eQTL marker, candidate SNPs 
+#' are searched from raw inputs within a user defined window size.
 #'
-#' @param raw_data The output from @seealso raw_input_data
-#' @param window The window around DO-eQTL marker contains candidate SNPs.
-#' Default = 1 Mbp
-#' @param cutoff Trinarization cutoff
-#' Default = 0.2
-#' @return A list of processed data objects
-#' E.g: Trinarized effect size of candidate SNPs with respect to DO gene
-#' Y.g: Trinarized DO-eQTL allelic dependence
-#' A.g: Trinarized local ATAC-seq signal for candidate SNPs
-#' F.g: Footprint annotations for candidate SNPs
-#' D.g: Edited distances between candidate SNP and DO-eQTL signal
-#' B.g: Trinarized gene expression in founder RNA-seq data
-#' snp_index: The indices of candidate SNPs in the original list of SNPs
-#' p.g: The number of candidate SNPs for each DO gene g.
+#' @param raw_data The output from \code{\link{raw_input_data}}.
+#' @param window The window size (Mbp) around DO-eQTL marker contains candidate SNPs.
+#' Default = 1 Mbp.
+#' @param cutoff Trinarization cutoff. A value between 0 and 0.5. 
+#' Default 0.2. See \code{\link{data_trinarize}}.
+#' @param n_cores The number of cores for parallel computing.
+#' Default = \code{detectCores() - 2}.
+#' @return A list of lists: the processed data objects are broken down
+#' into small elements for each row of the DO-eQTL data.
+#' 
+#' \tabular{ll}{
+#' \code{E.g} \tab Trinarized effect size of candidate SNPs with respect to DO gene. \cr
+#' \code{Y.g} \tab Trinarized DO-eQTL allelic dependence. \cr
+#' \code{A.g} \tab Trinarized local ATAC-seq signal for candidate SNPs. \cr
+#' \code{F.g} \tab Footprint annotations for candidate SNPs. \cr
+#' \code{D.g} \tab Edited distances between candidate SNP and DO-eQTL signal. \cr
+#' \code{B.g} \tab Trinarized gene expression in founder RNA-seq data. \cr
+#' \code{snp_index} \tab The indices of candidate SNPs in the original list of SNPs. \cr
+#' \code{p.g} \tab The number of candidate SNPs for each DO gene g. \cr
+#' \code{window} \tab The window size in Mbp. \cr
+#' }
 #' @examples
+#' data('example-10-genes')
+#' raw_data <- raw_input_data(dt1, dt2, dt3)
 #' model_data <- model_input_data(raw_data)
-#' @import data.table
-#' @import GenomicRanges
+#' @seealso \code{\link{raw_input_data}}, \code{\link{data_trinarize}}.
+#' @author Chenyang Dong \email{cdong@stat.wisc.edu}
+#' @rawNamespace import(data.table, except = shift)
+#' @rawNamespace import(GenomicRanges)
+#' @importClassesFrom GenomicRanges GRanges
 #' @export
 model_input_data <- function(raw_data = NULL,
-                             window = 1000000,
+                             window = 1,
                              cutoff = 0.2,
                              n_cores = detectCores() - 2) {
   if (is.null(raw_data)) {
     stop('Error: please input the raw_data.')
   }
+  
+  if(window <= 0){
+    stop('Error: the window around eQTL marker must be positive!')
+  }
+  
+  window <- window * 1000000
   
   YY <- raw_data$YY
   AA <- raw_data$AA
@@ -401,7 +452,8 @@ model_input_data <- function(raw_data = NULL,
       D.g = D.g,
       B.g = B.g,
       snp_index = snp_index,
-      p.g = p.g
+      p.g = p.g,
+      window = window
     )
   )
 }

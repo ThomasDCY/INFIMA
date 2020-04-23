@@ -1,21 +1,31 @@
-#' Compute pseudocount prior
-#' @param raw_data The output from @seealso raw_input_data
-#' @param model_data The output from @seealso model_input_data
-#' @param window The window around DO-eQTL marker contains candidate SNPs.
-#' Default = 1 Mbp
-#' @return A list of data objects.
-#' PI: The pseudocount term.
-#' dist: The distance score.
-#' F.g: The footprint information.
-#' cor.A.R: correlation betwwen ATAC-seq signal and effect size.
-#' cor.A.E: correlation between ATAC-seq signal and gene expression.
-#' @example
+#' @name compute_pseudocount
+#' @title Compute Pseudocount Prior
+#' @description For the candidate SNPs of each row of DO-eQTL data, 
+#' keep track of their the distance scores, footprinting annotations,
+#' correlations between local ATAC-seq signal and effect size,
+#' correlations between local ATAC-seq signal and gene expression.
+#' @param raw_data The output from \code{raw_input_data}
+#' @param model_data The output from  \code{model_input_data}
+#' @return A list of lists: the same structure as \code{model_data}.
+#' 
+#' \tabular{ll}{
+#' \code{PI} \tab The overall pseudocount term. \cr
+#' \code{dist} \tab The distance score. \cr
+#' \code{F.g} \tab The footprint annotation. \cr
+#' \code{cor.A.R} \tab The Correlation betwwen ATAC-seq signal and effect size. \cr
+#' \code{cor.A.E} \tab The Correlation between ATAC-seq signal and gene expression. \cr
+#' }
+#' @examples
+#' data('example-10-genes')
+#' raw_data <- raw_input_data(dt1, dt2, dt3)
+#' model_data <- model_input_data(raw_data)
 #' pseudocount <- compute_pseudocount(raw_data, model_data)
-#' @import data.table
+#' @seealso \code{\link{raw_input_data}}, \code{\link{model_input_data}}.
+#' @author Chenyang Dong \email{cdong@stat.wisc.edu}
+#' @rawNamespace import(data.table, except = shift)
 #' @export
 compute_pseudocount <- function(raw_data = NULL,
-                                model_data = NULL,
-                                window = 1000000) {
+                                model_data = NULL) {
   if (is.null(raw_data)) {
     stop('Error: please input the raw_data.')
   }
@@ -33,10 +43,10 @@ compute_pseudocount <- function(raw_data = NULL,
   F.g <- model_data$F.g
   snp_index <- model_data$snp_index
   p.g <- model_data$p.g
-  
+  window <- model_data$window
   
   stopifnot(exprs = {
-    !is.null(AA)
+    ! is.null(AA)
     ! is.null(EE)
     ! is.null(BB)
     ! is.null(do.eqtl)
@@ -44,6 +54,7 @@ compute_pseudocount <- function(raw_data = NULL,
     ! is.null(F.g)
     ! is.null(snp_index)
     ! is.null(p.g)
+    ! is.null(window)
   })
   
   

@@ -76,8 +76,8 @@ This function reads in the processed DO-eQTL, ATAC-seq
 and RNA-seq data as inputs for INFIMA.
 }
 \examples{
-\dontrun{data('example-10-genes')
-raw_data <- raw_input_data(dt1, dt2, dt3)}
+data('example-10-genes')
+raw_data <- raw_input_data(dt1, dt2, dt3)
 }
 \author{
 Chenyang Dong \email{cdong@stat.wisc.edu}
