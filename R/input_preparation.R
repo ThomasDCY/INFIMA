@@ -5,8 +5,8 @@
 #'
 #'
 #'
-#' @param filename1 DO-eQTL data, a data frame object or 
-#' the path to a comma separated .csv file. 
+#' @param filename1 DO-eQTL data, a data frame object or
+#' the path to a comma separated .csv file.
 #' Must contain the following columns with exactly the following column names in order:
 #' \tabular{ll}{
 #' ensembl \tab The Ensemble ID of DO-eQTL gene.\cr
@@ -22,21 +22,21 @@
 #' }
 #' Plus 8 columns named \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}
 #' recording the DO-eQTL allelic dependence measures for the 8 strains.
-#' 
-#' 
-#' @param filename2 Founder RNA-seq data, a matrix, a data frame or 
+#'
+#'
+#' @param filename2 Founder RNA-seq data, a matrix, a data frame or
 #' the path to a comma separated .csv file.
 #' DO gene (row) by sample (column) matrix with normalized gene expressions.
 #' The column names must be strain names \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}
 #' and there must be at least one sample for each strain.
-#' One caveat is that the rows of founder RNA-seq data should 
+#' One caveat is that the rows of founder RNA-seq data should
 #' correspond to the rows of DO-eQTL data (the same DO gene), i.e. the first two input files
 #' have the same number of rows.
-#' 
-#' 
+#'
+#'
 #' @param filename3 SNP and local ATAC-seq signal data, a data frame object
-#' or the path to a comma separated .csv file. 
-#' Must contain the following columns 
+#' or the path to a comma separated .csv file.
+#' Must contain the following columns
 #' with exactly the following column names in order:
 #' \tabular{ll}{
 #' snp_id \tab The SNP ID. \cr
@@ -46,20 +46,20 @@
 #' alt \tab The alternative nucleotide. \cr
 #' footprint \tab The user-defined footprint annotation.
 #' The recommended range is between 0 and 1. The larger the value,
-#' the more confidence the SNP is affecting a footprint. Put 0 if 
+#' the more confidence the SNP is affecting a footprint. Put 0 if
 #' the footprint analysis is not applicable. \cr
 #' }
-#' Plus 
-#' 
+#' Plus
+#'
 #' (a) 8 columns named as \code{strain-genotype} where \code{strain}
 #' is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. 0 means reference
 #' nucleotide while 2 means alternative nucleotide.
-#' 
+#'
 #' (b) 8 columns named as \code{strain-ATAC-seq} where \code{strain}
-#' is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. The normalized 
+#' is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. The normalized
 #' local ATAC-seq signal of the SNP.
-#' 
-#' 
+#'
+#'
 #' @return A list of raw data objects including:
 #' \tabular{ll}{
 #' \code{YY} \tab DO-eQTL allelic dependence matrix. \cr
@@ -88,7 +88,7 @@ raw_input_data <- function(filename1 = NULL,
   strains <-
     c('129', 'AJ', 'B6', 'Cast', 'NOD', 'NZO', 'PWK', 'WSB')
   
-  if(is.data.frame(filename1)){
+  if (is.data.frame(filename1)) {
     dt1 <- as.data.table(filename1)
   }
   else{
@@ -115,10 +115,10 @@ raw_input_data <- function(filename1 = NULL,
     ))
   }
   
-  if(is.matrix(filename2)){
+  if (is.matrix(filename2)) {
     dt2 <- as.data.table(as.numeric(filename2))
   }
-  else if(is.data.frame(filename2)){
+  else if (is.data.frame(filename2)) {
     dt2 <- as.data.table(filename2)
   }
   else{
@@ -133,11 +133,13 @@ raw_input_data <- function(filename1 = NULL,
     ))
   }
   if (any((colnames(dt2) %in% refcols2) == FALSE)) {
-    stop(paste(
-      'Error: the second input file cannot contain column names other than',
-      paste(strains, collapse = ', '),
-      '!'
-    ))
+    stop(
+      paste(
+        'Error: the second input file cannot contain column names other than',
+        paste(strains, collapse = ', '),
+        '!'
+      )
+    )
   }
   
   if (nrow(dt1) != nrow(dt2)) {
@@ -145,7 +147,7 @@ raw_input_data <- function(filename1 = NULL,
   }
   
   
-  if(is.data.frame(filename3)){
+  if (is.data.frame(filename3)) {
     dt3 <- as.data.table(filename3)
   }
   else{
@@ -219,18 +221,20 @@ raw_input_data <- function(filename1 = NULL,
   # snpData: the SNP information
   snpData <- dt3[, `snp_id`:`WSB-genotype`]
   
-  return(
-    list(
-      YY = YY,
-      AA = AA,
-      EE = EE,
-      rna.seq = rna.seq,
-      BB = BB,
-      FF = FF,
-      do.eqtl = do.eqtl,
-      snpData = snpData
-    )
+  
+  raw_data <- list(
+    YY = YY,
+    AA = AA,
+    EE = EE,
+    rna.seq = rna.seq,
+    BB = BB,
+    FF = FF,
+    do.eqtl = do.eqtl,
+    snpData = snpData
   )
+  
+  class(raw_data) <- 'raw_data'
+  return(raw_data)
 }
 
 
@@ -240,12 +244,12 @@ raw_input_data <- function(filename1 = NULL,
 #' @description This function trinarizes numeric matrix rowwisely
 #' to \{-1,0,1\}. The matrix should have 8 columns corresponding to
 #' 8 founder strains \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}.
-#' 
+#'
 #' First, each row of the matrix is standardized to [0,1].
-#' 
+#'
 #' Then, all values subtracted by the \code{B6} value in order to
 #' set \code{B6} as the reference.
-#' 
+#'
 #' Finally, anything larger than \code{cutoff} are transformed to 1.
 #' Anything smaller than -\code{cutoff} are transformed to -1.
 #' Anything between are transformed to 0.
@@ -255,12 +259,11 @@ raw_input_data <- function(filename1 = NULL,
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 #' @export
 data_trinarize <- function(mat, cutoff = 0.2) {
-  
-  if(ncol(mat) != 8){
+  if (ncol(mat) != 8) {
     stop('data_trinarize: The number of columns does not equal to 8!')
   }
   
-  if(cutoff <= 0 || cutoff >= 0.5){
+  if (cutoff <= 0 || cutoff >= 0.5) {
     stop('data_trinarize: cutoff parameter out of range (0, 0.5)!')
   }
   
@@ -286,19 +289,21 @@ data_trinarize <- function(mat, cutoff = 0.2) {
 #' @name model_input_data
 #' @title Process the INFIMA inputs for each DO gene
 #' @description This function converts the raw input data into the data
-#' for each row of the DO-eQTL data. For each eQTL marker, candidate SNPs 
+#' for each row of the DO-eQTL data. For each eQTL marker, candidate SNPs
 #' are searched from raw inputs within a user defined window size.
 #'
 #' @param raw_data The output from \code{\link{raw_input_data}}.
 #' @param window The window size (Mbp) around DO-eQTL marker contains candidate SNPs.
 #' Default = 1 Mbp.
-#' @param cutoff Trinarization cutoff. A value between 0 and 0.5. 
+#' @param cutoff Trinarization cutoff. A value between 0 and 0.5.
 #' Default 0.2. See \code{\link{data_trinarize}}.
 #' @param n_cores The number of cores for parallel computing.
 #' Default = \code{detectCores() - 2}.
+#' @param verbose Print outputs or not.
+#' Default \code{verbose = TRUE}.
 #' @return A list of lists: the processed data objects are broken down
 #' into small elements for each row of the DO-eQTL data.
-#' 
+#'
 #' \tabular{ll}{
 #' \code{E.g} \tab Trinarized effect size of candidate SNPs with respect to DO gene. \cr
 #' \code{Y.g} \tab Trinarized DO-eQTL allelic dependence. \cr
@@ -317,18 +322,29 @@ data_trinarize <- function(mat, cutoff = 0.2) {
 #' @seealso \code{\link{raw_input_data}}, \code{\link{data_trinarize}}.
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 #' @rawNamespace import(data.table, except = shift)
-#' @rawNamespace import(GenomicRanges)
+#' @import GenomicRanges
+#' @import doParallel
+#' @rawNamespace importFrom(IRanges,IRanges)
+#' @rawNamespace importFrom(S4Vectors,queryHits)
+#' @rawNamespace importFrom(S4Vectors,subjectHits)
 #' @importClassesFrom GenomicRanges GRanges
 #' @export
 model_input_data <- function(raw_data = NULL,
                              window = 1,
                              cutoff = 0.2,
-                             n_cores = detectCores() - 2) {
+                             n_cores = detectCores() - 2,
+                             verbose = TRUE,
+                             ...) {
   if (is.null(raw_data)) {
     stop('Error: please input the raw_data.')
   }
   
-  if(window <= 0){
+  if (class(raw_data) != 'raw_data') {
+    stop('Error: please input the S3 class raw_data.')
+  }
+  
+  
+  if (window <= 0) {
     stop('Error: the window around eQTL marker must be positive!')
   }
   
@@ -344,7 +360,7 @@ model_input_data <- function(raw_data = NULL,
   snpData <- raw_data$snpData
   
   stopifnot(exprs = {
-    !is.null(YY)
+    ! is.null(YY)
     ! is.null(AA)
     ! is.null(EE)
     ! is.null(rna.seq)
@@ -381,9 +397,11 @@ model_input_data <- function(raw_data = NULL,
   )
   
   for (g in 1:G) {
-    print(g)
-    Y.g[[g]] <- YY.t[g,]
-    B.g[[g]] <- BB.t[g,]
+    if (verbose) {
+      print(paste('Current row in DO-eQTL data:', g))
+    }
+    Y.g[[g]] <- YY.t[g, ]
+    B.g[[g]] <- BB.t[g, ]
     # find associated SNPs
     snp.loc <- GRanges(
       seqnames = do.eqtl$qtl_chr[g],
@@ -398,12 +416,12 @@ model_input_data <- function(raw_data = NULL,
     
     if (!identical(index, integer(0))) {
       # there exist at least one overlap
-      A.g[[g]] <- AA.t[index,]
+      A.g[[g]] <- AA.t[index, ]
       F.g[[g]] <- FF[index]
-      E.g[[g]] <- EE[index,] # genotype.g
+      E.g[[g]] <- EE[index, ] # genotype.g
       
       # get effect size E.g
-      exp.g <- rna.seq[g,] # gene expression
+      exp.g <- rna.seq[g, ] # gene expression
       atac.qtls.g <- genotype[, index] # regressors
       
       if (is.null(dim(E.g[[g]]))) {
@@ -421,15 +439,15 @@ model_input_data <- function(raw_data = NULL,
         pval <- summary(lm)$coefficients[2, 4]
         M <- 0
         if (pval < 0.05) {
-          M <- ifelse(estimate > 0, 1, -1)
+          M <- ifelse(estimate > 0, 1,-1)
         }
-        E.g[[g]][i,] <- E.g[[g]][i,] / 2 * M
+        E.g[[g]][i, ] <- E.g[[g]][i, ] / 2 * M
       }
       
       # compute the absolute distance
       D.g[[g]] <- matrix(0, nrow(E.g[[g]]), ncol(E.g[[g]]))
       for (i in 1:nrow(E.g[[g]])) {
-        D.g[[g]][i,] <- abs(E.g[[g]][i,] - Y.g[[g]])
+        D.g[[g]][i, ] <- abs(E.g[[g]][i, ] - Y.g[[g]])
       }
       
     }
@@ -442,18 +460,17 @@ model_input_data <- function(raw_data = NULL,
     }
   }
   
-  
-  return(
-    list(
-      E.g = E.g,
-      Y.g = Y.g,
-      A.g = A.g,
-      F.g = F.g,
-      D.g = D.g,
-      B.g = B.g,
-      snp_index = snp_index,
-      p.g = p.g,
-      window = window
-    )
+  model_data <- list(
+    E.g = E.g,
+    Y.g = Y.g,
+    A.g = A.g,
+    F.g = F.g,
+    D.g = D.g,
+    B.g = B.g,
+    snp_index = snp_index,
+    p.g = p.g,
+    window = window
   )
+  class(model_data) <- 'model_data'
+  return(model_data)
 }

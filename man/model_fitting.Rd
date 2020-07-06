@@ -41,6 +41,7 @@ Default \code{verbose = TRUE}.}
 }
 \value{
 A list of results after model fitting.
+
 Hyperparameters (see the paper for details):
 \tabular{ll}{
 \code{alpha} \tab The estimated \code{a1}. \cr

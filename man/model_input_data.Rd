@@ -8,7 +8,8 @@ model_input_data(
   raw_data = NULL,
   window = 1,
   cutoff = 0.2,
-  n_cores = detectCores() - 2
+  n_cores = detectCores() - 2,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -17,11 +18,14 @@ model_input_data(
 \item{window}{The window size (Mbp) around DO-eQTL marker contains candidate SNPs.
 Default = 1 Mbp.}
 
-\item{cutoff}{Trinarization cutoff. A value between 0 and 0.5. 
+\item{cutoff}{Trinarization cutoff. A value between 0 and 0.5.
 Default 0.2. See \code{\link{data_trinarize}}.}
 
 \item{n_cores}{The number of cores for parallel computing.
 Default = \code{detectCores() - 2}.}
+
+\item{verbose}{Print outputs or not.
+Default \code{verbose = TRUE}.}
 }
 \value{
 A list of lists: the processed data objects are broken down
@@ -41,7 +45,7 @@ into small elements for each row of the DO-eQTL data.
 }
 \description{
 This function converts the raw input data into the data
-for each row of the DO-eQTL data. For each eQTL marker, candidate SNPs 
+for each row of the DO-eQTL data. For each eQTL marker, candidate SNPs
 are searched from raw inputs within a user defined window size.
 }
 \examples{

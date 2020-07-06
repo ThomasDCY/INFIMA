@@ -7,8 +7,8 @@
 raw_input_data(filename1 = NULL, filename2 = NULL, filename3 = NULL, ...)
 }
 \arguments{
-\item{filename1}{DO-eQTL data, a data frame object or 
-the path to a comma separated .csv file. 
+\item{filename1}{DO-eQTL data, a data frame object or
+the path to a comma separated .csv file.
 Must contain the following columns with exactly the following column names in order:
 \tabular{ll}{
 ensembl \tab The Ensemble ID of DO-eQTL gene.\cr
@@ -25,18 +25,18 @@ lod \tab The LOD score of DO-eQTL marker.\cr
 Plus 8 columns named \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}
 recording the DO-eQTL allelic dependence measures for the 8 strains.}
 
-\item{filename2}{Founder RNA-seq data, a matrix, a data frame or 
+\item{filename2}{Founder RNA-seq data, a matrix, a data frame or
 the path to a comma separated .csv file.
 DO gene (row) by sample (column) matrix with normalized gene expressions.
 The column names must be strain names \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}
 and there must be at least one sample for each strain.
-One caveat is that the rows of founder RNA-seq data should 
+One caveat is that the rows of founder RNA-seq data should
 correspond to the rows of DO-eQTL data (the same DO gene), i.e. the first two input files
 have the same number of rows.}
 
 \item{filename3}{SNP and local ATAC-seq signal data, a data frame object
-or the path to a comma separated .csv file. 
-Must contain the following columns 
+or the path to a comma separated .csv file.
+Must contain the following columns
 with exactly the following column names in order:
 \tabular{ll}{
 snp_id \tab The SNP ID. \cr
@@ -46,17 +46,17 @@ ref \tab The reference nucleotide. \cr
 alt \tab The alternative nucleotide. \cr
 footprint \tab The user-defined footprint annotation.
 The recommended range is between 0 and 1. The larger the value,
-the more confidence the SNP is affecting a footprint. Put 0 if 
+the more confidence the SNP is affecting a footprint. Put 0 if
 the footprint analysis is not applicable. \cr
 }
-Plus 
+Plus
 
 (a) 8 columns named as \code{strain-genotype} where \code{strain}
 is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. 0 means reference
 nucleotide while 2 means alternative nucleotide.
 
 (b) 8 columns named as \code{strain-ATAC-seq} where \code{strain}
-is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. The normalized 
+is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. The normalized
 local ATAC-seq signal of the SNP.}
 }
 \value{

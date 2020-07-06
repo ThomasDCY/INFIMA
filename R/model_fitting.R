@@ -62,8 +62,16 @@ model_fitting <- function(model_data = NULL,
     stop('Error: please input the model_data.')
   }
   
+  if (class(model_data) != 'model_data') {
+    stop('Error: please input the S3 class model_data.')
+  }
+  
   if (is.null(pseudocount)) {
     stop('Error: please input the pseudocount.')
+  }
+  
+  if (class(pseudocount) != 'pseudocount') {
+    stop('Error: please input the S3 class pseudocount.')
   }
   
   D.g <- model_data$D.g
@@ -255,7 +263,7 @@ model_fitting <- function(model_data = NULL,
     beta.prev <- beta
   }
   
-  params <- list(
+  infima <- list(
     alpha = alpha,
     beta = beta,
     alpha.0 = alpha.0,
@@ -265,5 +273,7 @@ model_fitting <- function(model_data = NULL,
     V.g = V.g,
     Z.g = Z.g
   )
-  return(params)
+  
+  class(infima) <- 'infima'
+  return(infima)
 }

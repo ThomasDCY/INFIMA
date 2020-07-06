@@ -30,8 +30,16 @@ compute_pseudocount <- function(raw_data = NULL,
     stop('Error: please input the raw_data.')
   }
   
+  if (class(raw_data) != 'raw_data') {
+    stop('Error: please input the S3 class raw_data.')
+  }
+  
   if (is.null(model_data)) {
     stop('Error: please input the model_data.')
+  }
+  
+  if (class(model_data) != 'model_data') {
+    stop('Error: please input the S3 class model_data.')
   }
   
   AA <- raw_data$AA
@@ -119,13 +127,17 @@ compute_pseudocount <- function(raw_data = NULL,
     }
   }
   
-  return(list(
+  pseudocount <- list(
     PI = PI,
     dist = dist,
     F.g = F.g,
     cor.A.R = cor.A.R,
     cor.A.E = cor.A.E
-  ))
+  )
+  
+  class(pseudocount) <- 'pseudocount'
+  
+  return(pseudocount)
 }
 
 
