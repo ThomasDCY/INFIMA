@@ -348,6 +348,8 @@ model_input_data <- function(raw_data = NULL,
     stop('Error: the window around eQTL marker must be positive!')
   }
   
+  time.start <- proc.time()
+  
   window <- window * 1000000
   
   YY <- raw_data$YY
@@ -372,13 +374,6 @@ model_input_data <- function(raw_data = NULL,
   
   #### filter out those do.eqtl rows that do not have overlapping SNPs ####
   G <- nrow(do.eqtl)
-  E.g <- vector('list', G)
-  Y.g <- vector('list', G)
-  A.g <- vector('list', G)
-  F.g <- vector('list', G)
-  D.g <- vector('list', G)
-  B.g <- vector('list', G)
-  snp_index <- vector('list', G)
   
   YY.t <- data_trinarize(YY, cutoff)
   AA.t <- data_trinarize(AA, cutoff)
@@ -396,12 +391,14 @@ model_input_data <- function(raw_data = NULL,
     strand = '*'
   )
   
-  for (g in 1:G) {
+  registerDoParallel(cores = n_cores)
+  
+  r <- foreach(g = 1:G) %dopar% {
     if (verbose) {
-      print(paste('Current row in DO-eQTL data:', g))
+      message(paste('Current row in DO-eQTL data:', g))
     }
-    Y.g[[g]] <- YY.t[g, ]
-    B.g[[g]] <- BB.t[g, ]
+    Y.g <- YY.t[g, ]
+    B.g <- BB.t[g, ]
     # find associated SNPs
     snp.loc <- GRanges(
       seqnames = do.eqtl$qtl_chr[g],
@@ -412,22 +409,30 @@ model_input_data <- function(raw_data = NULL,
       strand = '*'
     )
     index <- subjectHits(findOverlaps(snp.loc, snps))
-    snp_index[[g]] <- index
+    snp_index <- index
+    p.g <- length(snp_index)
+    
+    # if no local-ATAC-QTL, then return NULL
+    E.g <- NULL
+    A.g <- NULL
+    F.g <- NULL
+    D.g <- NULL
+    
     
     if (!identical(index, integer(0))) {
       # there exist at least one overlap
-      A.g[[g]] <- AA.t[index, ]
-      F.g[[g]] <- FF[index]
-      E.g[[g]] <- EE[index, ] # genotype.g
+      A.g <- AA.t[index, ]
+      F.g <- FF[index]
+      E.g <- EE[index, ] # genotype.g
       
       # get effect size E.g
       exp.g <- rna.seq[g, ] # gene expression
       atac.qtls.g <- genotype[, index] # regressors
       
-      if (is.null(dim(E.g[[g]]))) {
+      if (is.null(dim(E.g))) {
         # only one SNP found, correct the dimension
-        E.g[[g]] <- t(as.matrix(E.g[[g]]))
-        A.g[[g]] <- t(as.matrix(A.g[[g]]))
+        E.g <- t(as.matrix(E.g))
+        A.g <- t(as.matrix(A.g))
         atac.qtls.g <- t(t(atac.qtls.g))
       }
       
@@ -441,24 +446,41 @@ model_input_data <- function(raw_data = NULL,
         if (pval < 0.05) {
           M <- ifelse(estimate > 0, 1,-1)
         }
-        E.g[[g]][i, ] <- E.g[[g]][i, ] / 2 * M
+        E.g[i, ] <- E.g[i, ] / 2 * M
       }
       
       # compute the absolute distance
-      D.g[[g]] <- matrix(0, nrow(E.g[[g]]), ncol(E.g[[g]]))
-      for (i in 1:nrow(E.g[[g]])) {
-        D.g[[g]][i, ] <- abs(E.g[[g]][i, ] - Y.g[[g]])
+      D.g <- matrix(0, nrow(E.g), ncol(E.g))
+      for (i in 1:nrow(E.g)) {
+        D.g[i, ] <- abs(E.g[i, ] - Y.g)
       }
       
     }
+    
+    return(list(
+      E.g = E.g,
+      Y.g = Y.g,
+      A.g = A.g,
+      F.g = F.g,
+      D.g = D.g,
+      B.g = B.g,
+      snp_index = snp_index,
+      p.g = p.g
+    ))
   }
   
-  p.g <- rep(0, G)
-  for (g in 1:G) {
-    if (!identical(snp_index[[g]], integer(0))) {
-      p.g[g] <- length(snp_index[[g]])
-    }
-  }
+  
+  E.g <- lapply(r, function(x) x$E.g)
+  Y.g <- lapply(r, function(x) x$Y.g)
+  A.g <- lapply(r, function(x) x$A.g)
+  F.g <- lapply(r, function(x) x$F.g)
+  D.g <- lapply(r, function(x) x$D.g)
+  B.g <- lapply(r, function(x) x$B.g)
+  p.g <- sapply(r, function(x) x$p.g)
+  snp_index <- lapply(r, function(x) x$snp_index)
+  
+  
+  cat("Time taken", proc.time()[3] - time.start[3])
   
   model_data <- list(
     E.g = E.g,
@@ -474,3 +496,10 @@ model_input_data <- function(raw_data = NULL,
   class(model_data) <- 'model_data'
   return(model_data)
 }
+
+
+
+
+
+
+

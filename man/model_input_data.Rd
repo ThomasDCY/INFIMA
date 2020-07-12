@@ -9,7 +9,8 @@ model_input_data(
   window = 1,
   cutoff = 0.2,
   n_cores = detectCores() - 2,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{

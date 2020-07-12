@@ -2,8 +2,8 @@ rm(list = ls())
 library(data.table)
 setwd('~/Documents/GitHub/INFIMA/data/')
 
-load('~/Dropbox/EM/run090319/input_data_filtered.RData')
-load('~/Dropbox/RNA-seq/countmat_13568_protein_coding_UQUA.RData')
+load('~/Documents/AlanAttie4/EM/run090319/input_data_filtered.RData')
+load('~/Documents/AlanAttie4/RNA-seq/countmat_13568_protein_coding_UQUA.RData')
 # filter out different chr cases
 indicator <- do.eqtl$chr == do.eqtl$qtl_chr # 10396 rows left
 YY <- YY[indicator,] # 10396*8
