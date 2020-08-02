@@ -1,6 +1,6 @@
 rm(list = ls())
 library(data.table)
-setwd('~/Documents/GitHub/INFIMA/data/')
+# setwd('~/Documents/GitHub/INFIMA/data/')
 
 load('~/Documents/AlanAttie4/EM/run090319/input_data_filtered.RData')
 load('~/Documents/AlanAttie4/RNA-seq/countmat_13568_protein_coding_UQUA.RData')
@@ -42,10 +42,16 @@ dt3 <- cbind(snp.info, genotype, atac.seq)
 dt3$footprint <- FF
 
 
-save(dt1, dt2, dt3, file = 'inputs.RData')
-write.table(dt1[chr == 'chr1'], file = 'input1-chr1.csv', sep = ',',
+save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/data/inputs.RData')
+write.table(dt1[chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/data/input1-chr1.csv', sep = ',',
             quote = F, row.names = F, col.names = T)
-write.table(dt2[dt1$chr == 'chr1'], file = 'input2-chr1.csv', sep = ',',
+write.table(dt2[dt1$chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/data/input2-chr1.csv', sep = ',',
             quote = F, row.names = F, col.names = T)
-write.table(dt3[chr == 'chr1'], file = 'input3-chr1.csv', sep = ',',
+write.table(dt3[chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/data/input3-chr1.csv', sep = ',',
             quote = F, row.names = F, col.names = T)
+
+ind <- dt1$chr == 'chr1'
+dt1 <- dt1[ind]
+dt2 <- dt2[ind]
+dt3 <- dt3[chr == 'chr1']
+save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/data/inputs-chr1.RData')

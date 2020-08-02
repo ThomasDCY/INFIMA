@@ -60,10 +60,11 @@
 #' local ATAC-seq signal of the SNP.
 #'
 #'
-#' @return A list of raw data objects including:
+#' @return A raw_data object including:
 #' \tabular{ll}{
 #' \code{YY} \tab DO-eQTL allelic dependence matrix. \cr
 #' \code{AA} \tab Local ATAC-seq signal matrix. \cr
+#' \code{EE} \tab Local-ATAC-QTL genotypes. \cr
 #' \code{rna.seq} \tab Full founder RNA-seq data matrix. \cr
 #' \code{BB} \tab Averaged founder RNA-seq data matrix. \cr
 #' \code{FF} \tab Footprint annnotation vector. \cr
@@ -299,9 +300,9 @@ data_trinarize <- function(mat, cutoff = 0.2) {
 #' Default 0.2. See \code{\link{data_trinarize}}.
 #' @param n_cores The number of cores for parallel computing.
 #' Default = \code{detectCores() - 2}.
-#' @param verbose Print outputs or not.
+#' @param verbose Print messages or not. 
 #' Default \code{verbose = TRUE}.
-#' @return A list of lists: the processed data objects are broken down
+#' @return A model_data object: the processed data objects are broken down
 #' into small elements for each row of the DO-eQTL data.
 #'
 #' \tabular{ll}{
@@ -313,7 +314,7 @@ data_trinarize <- function(mat, cutoff = 0.2) {
 #' \code{B.g} \tab Trinarized gene expression in founder RNA-seq data. \cr
 #' \code{snp_index} \tab The indices of candidate SNPs in the original list of SNPs. \cr
 #' \code{p.g} \tab The number of candidate SNPs for each DO gene g. \cr
-#' \code{window} \tab The window size in Mbp. \cr
+#' \code{window} \tab The window size in Mb. \cr
 #' }
 #' @examples
 #' data('example-10-genes')
@@ -323,7 +324,9 @@ data_trinarize <- function(mat, cutoff = 0.2) {
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 #' @rawNamespace import(data.table, except = shift)
 #' @import GenomicRanges
+#' @import parallel
 #' @import doParallel
+#' @import foreach
 #' @rawNamespace importFrom(IRanges,IRanges)
 #' @rawNamespace importFrom(S4Vectors,queryHits)
 #' @rawNamespace importFrom(S4Vectors,subjectHits)
@@ -393,10 +396,14 @@ model_input_data <- function(raw_data = NULL,
   
   registerDoParallel(cores = n_cores)
   
+  if(verbose){
+    message(paste('n_cores =', n_cores))
+  }
+  
   r <- foreach(g = 1:G) %dopar% {
-    if (verbose) {
-      message(paste('Current row in DO-eQTL data:', g))
-    }
+    # if (verbose) {
+    #   message(paste('Current row in DO-eQTL data:', g))
+    # }
     Y.g <- YY.t[g, ]
     B.g <- BB.t[g, ]
     # find associated SNPs
@@ -479,8 +486,9 @@ model_input_data <- function(raw_data = NULL,
   p.g <- sapply(r, function(x) x$p.g)
   snp_index <- lapply(r, function(x) x$snp_index)
   
-  
-  cat("Time taken", proc.time()[3] - time.start[3])
+  if(verbose){
+    cat("Time taken", proc.time()[3] - time.start[3])
+  }
   
   model_data <- list(
     E.g = E.g,

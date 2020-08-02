@@ -1,5 +1,5 @@
 Package: INFIMA
-Title: Integrative Fine-mapping with Model Organism 
+Title: Integrative Fine-mapping with Model Organism Multi-Omics Data
 Version: 1.00
 Authors@R: 
     person(given = "Chenyang",

@@ -25,11 +25,11 @@ Default 0.2. See \code{\link{data_trinarize}}.}
 \item{n_cores}{The number of cores for parallel computing.
 Default = \code{detectCores() - 2}.}
 
-\item{verbose}{Print outputs or not.
+\item{verbose}{Print messages or not. 
 Default \code{verbose = TRUE}.}
 }
 \value{
-A list of lists: the processed data objects are broken down
+A model_data object: the processed data objects are broken down
 into small elements for each row of the DO-eQTL data.
 
 \tabular{ll}{
@@ -41,7 +41,7 @@ into small elements for each row of the DO-eQTL data.
 \code{B.g} \tab Trinarized gene expression in founder RNA-seq data. \cr
 \code{snp_index} \tab The indices of candidate SNPs in the original list of SNPs. \cr
 \code{p.g} \tab The number of candidate SNPs for each DO gene g. \cr
-\code{window} \tab The window size in Mbp. \cr
+\code{window} \tab The window size in Mb. \cr
 }
 }
 \description{

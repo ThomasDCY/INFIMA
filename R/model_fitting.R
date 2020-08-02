@@ -7,7 +7,7 @@
 #' quantifications to pinpoint the causal variants.
 #' 
 #' @param model_data The output from \code{\link{model_input_data}}.
-#' @param pseudocount The output from \code{\link{compute_pseudocount}}.
+#' @param prior The output from \code{\link{compute_prior}}.
 #' @param alpha_init The initial parameters of alpha:
 #' The three-dimensional multinomial parameters for the generative model 
 #' of normal strains \code{129, AJ, B6, NOD, NZO}.
@@ -21,11 +21,11 @@
 #' Default \code{gamma_init = 0.5}.
 #' @param max_iter The maximum iteration allowed. 
 #' Default \code{max_iter = 100}.
-#' @param verbose Print outputs or not. 
+#' @param verbose Print messages or not. 
 #' Default \code{verbose = TRUE}.
-#' @return A list of results after model fitting.
+#' @return An infima object containing the results after model fitting.
 #' 
-#' Hyperparameters (see the paper for details):
+#' Parameters (see the paper for details):
 #' \tabular{ll}{
 #' \code{alpha} \tab The estimated \code{a1}. \cr
 #' \code{beta} \tab The estimated \code{b1}. \cr
@@ -44,15 +44,15 @@
 #' data('example-10-genes')
 #' raw_data <- raw_input_data(dt1, dt2, dt3)
 #' model_data <- model_input_data(raw_data)
-#' pseudocount <- compute_pseudocount(raw_data, model_data)
-#' infima <- model_fitting(model_data, pseudocount)
+#' prior <- compute_prior(raw_data, model_data)
+#' infima <- model_fitting(model_data, prior)
 #' 
-#' @seealso \code{\link{raw_input_data}}, \code{\link{model_input_data}}, \code{\link{compute_pseudocount}}.
+#' @seealso \code{\link{raw_input_data}}, \code{\link{model_input_data}}, \code{\link{compute_prior}}.
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 #' @rawNamespace import(data.table, except = shift)
 #' @export
 model_fitting <- function(model_data = NULL,
-                          pseudocount = NULL,
+                          prior = NULL,
                           alpha_init = c(0.6, 0.3, 0.1),
                           beta_init = c(0.5, 0.4, 0.1),
                           gamma_init = 0.5,
@@ -66,19 +66,19 @@ model_fitting <- function(model_data = NULL,
     stop('Error: please input the S3 class model_data.')
   }
   
-  if (is.null(pseudocount)) {
-    stop('Error: please input the pseudocount.')
+  if (is.null(prior)) {
+    stop('Error: please input the prior.')
   }
   
-  if (class(pseudocount) != 'pseudocount') {
-    stop('Error: please input the S3 class pseudocount.')
+  if (class(prior) != 'prior') {
+    stop('Error: please input the S3 class prior.')
   }
   
   D.g <- model_data$D.g
   p.g <- model_data$p.g
   B.g <- model_data$B.g
   Y.g <- model_data$Y.g
-  PI <- pseudocount$PI
+  PI <- prior$PI
   
   
   stopifnot(exprs = {

@@ -60,10 +60,11 @@ is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. The normalized
 local ATAC-seq signal of the SNP.}
 }
 \value{
-A list of raw data objects including:
+A raw_data object including:
 \tabular{ll}{
 \code{YY} \tab DO-eQTL allelic dependence matrix. \cr
 \code{AA} \tab Local ATAC-seq signal matrix. \cr
+\code{EE} \tab Local-ATAC-QTL genotypes. \cr
 \code{rna.seq} \tab Full founder RNA-seq data matrix. \cr
 \code{BB} \tab Averaged founder RNA-seq data matrix. \cr
 \code{FF} \tab Footprint annnotation vector. \cr

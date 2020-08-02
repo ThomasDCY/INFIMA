@@ -1,31 +1,41 @@
-#' @name compute_pseudocount
-#' @title Compute Pseudocount Prior
+#' @name compute_prior
+#' @title Compute Dirichlet prior
 #' @description For the candidate SNPs of each row of DO-eQTL data, 
 #' keep track of their the distance scores, footprinting annotations,
 #' correlations between local ATAC-seq signal and effect size,
 #' correlations between local ATAC-seq signal and gene expression.
 #' @param raw_data The output from \code{raw_input_data}
 #' @param model_data The output from  \code{model_input_data}
-#' @return A list of lists: the same structure as \code{model_data}.
+#' @param n_cores The number of cores for parallel computing.
+#' @param verbose Print messages or not. 
+#' Default = \code{detectCores() - 2}.
+#' 
+#' 
+#' @return A prior data object.
 #' 
 #' \tabular{ll}{
-#' \code{PI} \tab The overall pseudocount term. \cr
+#' \code{PI} \tab The overall prior term. \cr
 #' \code{dist} \tab The distance score. \cr
 #' \code{F.g} \tab The footprint annotation. \cr
-#' \code{cor.A.R} \tab The Correlation betwwen ATAC-seq signal and effect size. \cr
+#' \code{cor.A.B} \tab The Correlation betwwen ATAC-seq signal and founder effect size. \cr
 #' \code{cor.A.E} \tab The Correlation between ATAC-seq signal and gene expression. \cr
 #' }
 #' @examples
 #' data('example-10-genes')
 #' raw_data <- raw_input_data(dt1, dt2, dt3)
 #' model_data <- model_input_data(raw_data)
-#' pseudocount <- compute_pseudocount(raw_data, model_data)
+#' prior <- compute_prior(raw_data, model_data)
 #' @seealso \code{\link{raw_input_data}}, \code{\link{model_input_data}}.
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
+#' @import parallel
+#' @import doParallel
+#' @import foreach
 #' @rawNamespace import(data.table, except = shift)
 #' @export
-compute_pseudocount <- function(raw_data = NULL,
-                                model_data = NULL) {
+compute_prior <- function(raw_data = NULL,
+                                model_data = NULL,
+                                n_cores = detectCores() - 2,
+                                verbose = TRUE) {
   if (is.null(raw_data)) {
     stop('Error: please input the raw_data.')
   }
@@ -41,6 +51,8 @@ compute_pseudocount <- function(raw_data = NULL,
   if (class(model_data) != 'model_data') {
     stop('Error: please input the S3 class model_data.')
   }
+  
+  time.start <- proc.time()
   
   AA <- raw_data$AA
   EE <- raw_data$EE
@@ -68,23 +80,33 @@ compute_pseudocount <- function(raw_data = NULL,
   
   G <- length(p.g)
   
+  # # initialize the pseudo counts
+  # PI <- vector('list', G)
+  # # compute pseudo_count components
+  # dist <- vector('list', G)
+  # cor.A.E <- vector('list', G)
+  # cor.A.B <- vector('list', G)
   
+  registerDoParallel(cores = n_cores)
   
+  if(verbose){
+    message(paste('n_cores =', n_cores))
+  }
   
-  # initialize the pseudo counts
-  PI <- vector('list', G)
-  # compute pseudo_count components
-  dist <- vector('list', G)
-  cor.A.E <- vector('list', G)
-  cor.A.R <- vector('list', G)
-  
-  for (g in 1:G) {
+  r <- foreach(g = 1:G) %dopar% {
     # print(g)
+    
+    # if no local-ATAC-QTL, then return NULL
+    PI <- NULL
+    dist <- NULL
+    cor.A.E <- NULL
+    cor.A.B <- NULL
+    
     if (p.g[g] > 0) {
-      PI[[g]] <- rep(0, p.g[g])
-      dist[[g]] <- rep(0, p.g[g])
-      cor.A.E[[g]] <- rep(0, p.g[g])
-      cor.A.R[[g]] <- rep(0, p.g[g])
+      PI <- rep(0, p.g[g])
+      dist <- rep(0, p.g[g])
+      cor.A.E <- rep(0, p.g[g])
+      cor.A.B <- rep(0, p.g[g])
       
       # Distance between TSS and ATAC-QTL
       if (do.eqtl$strand[g] == '+') {
@@ -103,41 +125,57 @@ compute_pseudocount <- function(raw_data = NULL,
         d <- min(abs(tss[1] - snp_pos), abs(tss[2] - snp_pos)) / 1e5
         d <- d * window / 1000000
         if (d <= 2.5) {
-          dist[[g]][k] <- 0.5
+          dist[k] <- 0.5
         }
         else{
-          dist[[g]][k] <- 5 / 12 / (d - 5 / 3)
+          dist[k] <- 5 / 12 / (d - 5 / 3)
         }
         
         # correlation of founder RNA-seq vs ATAC-seq score
-        cor.A.R[[g]][k] <- cor(BB[g, ], AA[snp_index[[g]][k], ])
-        # correlation of ATAC-seq and SNP genotype
-        cor.A.E[[g]][k] <-
+        cor.A.B[k] <- cor(BB[g, ], AA[snp_index[[g]][k], ])
+        # correlation of ATAC-seq and allelic effect of founder gene
+        cor.A.E[k] <-
           cor(AA[snp_index[[g]][k], ], EE[snp_index[[g]][k], ])
         
         # distance prior
-        PI[[g]][k] <- dist[[g]][k]
+        PI[k] <- dist[k]
         # footprint analysis score
-        PI[[g]][k] <- PI[[g]][k] + F.g[[g]][k]
+        PI[k] <- PI[k] + F.g[[g]][k]
         # correlation of founder RNA-seq vs ATAC-seq score
-        PI[[g]][k] <- PI[[g]][k] + abs(cor.A.R[[g]][k])
+        PI[k] <- PI[k] + abs(cor.A.B[k])
         # correlation of ATAC-seq and SNP genotype
-        PI[[g]][k] <- PI[[g]][k] + abs(cor.A.E[[g]][k])
+        PI[k] <- PI[k] + abs(cor.A.E[k])
       }
     }
+    
+    return(list(
+      PI = PI,
+      dist = dist,
+      cor.A.B = cor.A.B,
+      cor.A.E = cor.A.E
+    ))
   }
   
-  pseudocount <- list(
+  PI <- lapply(r, function(x) x$PI)
+  dist <- lapply(r, function(x) x$dist)
+  cor.A.B <- lapply(r, function(x) x$cor.A.B)
+  cor.A.E <- lapply(r, function(x) x$cor.A.E)
+  
+  prior <- list(
     PI = PI,
     dist = dist,
     F.g = F.g,
-    cor.A.R = cor.A.R,
+    cor.A.B = cor.A.B,
     cor.A.E = cor.A.E
   )
   
-  class(pseudocount) <- 'pseudocount'
+  if(verbose){
+    cat("Time taken", proc.time()[3] - time.start[3])
+  }
   
-  return(pseudocount)
+  class(prior) <- 'prior'
+  
+  return(prior)
 }
 
 

@@ -1,19 +1,37 @@
 ---
-title: "vignette"
-output: rmarkdown::html_vignette
+title: "INFIMA: Integrative Fine-mapping with Model Organism Multi-Omics Data"
+author:
+- name: Chenyang Dong
+  affiliation: 
+  - Department of Statistics, University of Wisconsin - Madison
+- name: Sunduz Keles
+  affiliation: 
+  - Department of Biostatistics and Medical Informatics, and Statistics, University of Wisconsin - Madison
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{vignette}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{INFIMA}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
+# Introduction
 
-```{r setup}
-library(INFIMA)
+This document provides an introduction to the affinity test for large sets of SNP-motif interactions using the *atSNP* package(**a**ffinity **t**est for regulatory **SNP** detection). *atSNP* implements in-silico methods for identifying SNPs that potentially may affect binding affinity of transcription factors. Given a set of SNPs and a library of motif position weight matrices (PWMs), *atSNP* provides two main functions for analyzing SNP effects:
+
+# Installation
+
+*atSNP* depends on the following \R{} packages:
+
+(a) `r CRANpkg("data.table")` is used for formatting results that are easy for users to query.
+(b) `r Biocpkg("GenomicRanges")` is used for operating genomic intervals.
+
+# Example
+
+# Session Information
+
+```{r eval=TRUE,echo=FALSE,results="markup",cache=FALSE}
+print(sessionInfo())
 ```

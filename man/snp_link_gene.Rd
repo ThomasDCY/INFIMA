@@ -4,10 +4,22 @@
 \alias{snp_link_gene}
 \title{Link SNPs to effector genes}
 \usage{
-snp_link_gene(infima, model_data, fdr = 0.1, cum.pprob = 0.8, cred.set = 0.5)
+snp_link_gene(
+  infima,
+  raw_data,
+  model_data,
+  prior,
+  fdr = 0.1,
+  cum.pprob = 0.8,
+  cred.set = 0.5,
+  n_cores = detectCores() - 2,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{infima}{The output from \code{model_fitting}}
+
+\item{raw_data}{The output from \code{\link{raw_input_data}}.}
 
 \item{model_data}{The output from \code{\link{model_input_data}}.}
 
@@ -19,29 +31,63 @@ the target credible set. Default 0.8. Take values between 0 and 1.}
 
 \item{cred.set}{The maximum proportion of candidate SNPs allowed
 in the credible set. Default 0.5. Take values between 0 and 1.}
+
+\item{n_cores}{The number of cores for parallel computing.}
+
+\item{verbose}{Print messages or not.
+Default = \code{detectCores() - 2}.}
 }
 \value{
-A data table with the following columns.
+An \code{infima_results} object. It is a list with length equal to the total number
+of instances in the DO-eQTL data. \code{infima_results[[i]]} is \code{NULL} if the i-th DO gene does
+not pass the FDR cutoff. Otherwise, \code{infima_results[[i]]} contains two lists \code{input_data}
+and \code{output_data}.
+
+\code{input_data} contains:
 \tabular{ll}{
-\code{snp_id} \tab The SNP ID. \cr
-\code{chr} \tab The chromosome of the SNP. \cr
-\code{snp_pos} \tab The locus of the SNP. \cr
-\code{ref} \tab The reference allele of the SNP. \cr
-\code{alt} \tab The alternative allele of the SNP. \cr
-\code{ensembl} \tab The ensemble ID of the effector gene. \cr
-\code{symbol} \tab The gene symbol of the effector gene. \cr
+\code{Y} \tab raw DO-eQTL signal \cr
+\code{Y.t} \tab trinarized DO-eQTL signal \cr
+\code{A} \tab raw ATAC-seq signal \cr
+\code{A.t} \tab trinarized ATAC-seq signal \cr
+\code{B} \tab raw RNA-seq data (all samples) \cr
+\code{B.avg} \tab raw RNA-seq data (averaged) \cr
+\code{B.t} \tab trinarized RNA-seq data \cr
+\code{do.eqtl} \tab DO-eQTL data: DO gene & marker information \cr
+\code{snpData} \tab SNP information of causal local-ATAC-QTLs \cr
+\code{D} \tab the edit distance \cr
+\code{footprint} \tab the footprint information \cr
+\code{E.t} \tab the trinarized allelic effects \cr
+\code{dist} \tab the distance score component in the prior \cr
+\code{cor.A.E} \tab the Correlation between ATAC-seq signal and gene expression \cr
+\code{cor.A.B} \tab the Correlation betwwen ATAC-seq signal and founder effect size \cr
+\code{p} \tab the total number of candidates \cr
+\code{k} \tab the number of candidates in the credible set \cr
+}
+
+\code{output_data} contains:
+\tabular{ll}{
+\code{footprint.rs} \tab the footprint information rank score \cr
+\code{dist.rs} \tab the distance rank score \cr
+\code{cor.A.E.rs} \tab the cor.A.E rank score \cr
+\code{cor.A.B.rs} \tab the cor.A.B rank score \cr
+\code{Z} \tab the posterior probabilities of the output \cr
+\code{Z.rs} \tab the rank score of the posterior probabilities \cr
 }
 }
 \description{
-Analyze the outputs from INFIMA and link local-ATAC-QTLs to effector genes
+Analyze the outputs from INFIMA and link local-ATAC-QTLs to effector genes.
+Including the posterior probabilities, target genes, each piece of input information,
+and the relative ranks of each piece of information.
 }
 \examples{
 data('example-10-genes')
 raw_data <- raw_input_data(dt1, dt2, dt3)
 model_data <- model_input_data(raw_data)
-pseudocount <- compute_pseudocount(raw_data, model_data)
-infima <- model_fitting(model_data, pseudocount)
-effector_genes <- snp_link_gene(infima, model_data, fdr = 0.05, cum.pprob = 0.8, cred.set = 0.5)
+prior <- compute_prior(raw_data, model_data)
+infima <- model_fitting(model_data, prior)
+infima_results <- snp_link_gene(infima, raw_data, model_data, prior, fdr = 0.05, cum.pprob = 0.8, cred.set = 0.5)
+
+
 }
 \seealso{
 \code{\link{model_fitting}}, \code{\link{model_input_data}}.

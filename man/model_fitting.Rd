@@ -6,7 +6,7 @@
 \usage{
 model_fitting(
   model_data = NULL,
-  pseudocount = NULL,
+  prior = NULL,
   alpha_init = c(0.6, 0.3, 0.1),
   beta_init = c(0.5, 0.4, 0.1),
   gamma_init = 0.5,
@@ -17,7 +17,7 @@ model_fitting(
 \arguments{
 \item{model_data}{The output from \code{\link{model_input_data}}.}
 
-\item{pseudocount}{The output from \code{\link{compute_pseudocount}}.}
+\item{prior}{The output from \code{\link{compute_prior}}.}
 
 \item{alpha_init}{The initial parameters of alpha:
 The three-dimensional multinomial parameters for the generative model 
@@ -36,13 +36,13 @@ Default \code{gamma_init = 0.5}.}
 \item{max_iter}{The maximum iteration allowed. 
 Default \code{max_iter = 100}.}
 
-\item{verbose}{Print outputs or not. 
+\item{verbose}{Print messages or not. 
 Default \code{verbose = TRUE}.}
 }
 \value{
-A list of results after model fitting.
+An infima object containing the results after model fitting.
 
-Hyperparameters (see the paper for details):
+Parameters (see the paper for details):
 \tabular{ll}{
 \code{alpha} \tab The estimated \code{a1}. \cr
 \code{beta} \tab The estimated \code{b1}. \cr
@@ -67,12 +67,12 @@ quantifications to pinpoint the causal variants.
 data('example-10-genes')
 raw_data <- raw_input_data(dt1, dt2, dt3)
 model_data <- model_input_data(raw_data)
-pseudocount <- compute_pseudocount(raw_data, model_data)
-infima <- model_fitting(model_data, pseudocount)
+prior <- compute_prior(raw_data, model_data)
+infima <- model_fitting(model_data, prior)
 
 }
 \seealso{
-\code{\link{raw_input_data}}, \code{\link{model_input_data}}, \code{\link{compute_pseudocount}}.
+\code{\link{raw_input_data}}, \code{\link{model_input_data}}, \code{\link{compute_prior}}.
 }
 \author{
 Chenyang Dong \email{cdong@stat.wisc.edu}
