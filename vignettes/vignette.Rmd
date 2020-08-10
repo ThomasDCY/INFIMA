@@ -25,23 +25,23 @@ suppressWarnings(library(knitr))
 
 # Introduction
 
-This document provides an introduction to the *In*tegrative *Fi*ne-*Ma*pping with Model Organism Multi-Omics Data using the *INFIMA* package. *INFIMA* utilizes the diversity outbred (DO) mice population as the model organsim. The major usage of the *INFIMA* package is to fine-map the eQTL markers in DO studies (DO-eQTL). *INFIMA* implements an empirical Bayes model which quantifies how well each non-coding SNP explains the observed DO allelic patern through consistency of founder mice RNA-seq data, founder mice ATAC-seq data (including the existence and consistency of a footprint) with the observed allelic pattern. *INFIMA* assumes 0 or 1 causal SNPs for a DO-eQTL gene. Given a library of mouse SNPs, the corresponding local ATAC-seq signals, DO-eQTL data as well as the gene expression in founder mice, *INFIMA* provides the following functionalities:
+This document provides an introduction to the **In**tegrative **Fi**ne-**Ma**pping with Model Organism Multi-Omics Data using the **INFIMA** package. **INFIMA** utilizes the diversity outbred (DO) mice population as the model organsim. The major usage of the **INFIMA** package is to fine-map the eQTL markers in DO studies (DO-eQTL). **INFIMA** implements an empirical Bayes model which quantifies how well each non-coding SNP explains the observed DO allelic patern through consistency of founder mice RNA-seq data, founder mice ATAC-seq data (including the existence and consistency of a footprint) with the observed allelic pattern. **INFIMA** assumes 0 or 1 causal SNPs for a DO-eQTL gene. Given a library of mouse SNPs, the corresponding local ATAC-seq signals, DO-eQTL data as well as the gene expression in founder mice, **INFIMA** provides the following functionalities:
 
 (a) Fine-mapping DO-eQTLs and estimate SNP-level posterior probabilities.
 (b) Linking SNPs or the local ATAC-seq peaks to effector genes.
 
-*INFIMA* results from DO studies can be mapped to human, which provides putative effector genes of human GWAS SNPs.
+**INFIMA** results from DO studies can be mapped to human, which provides putative effector genes of human GWAS SNPs.
 
 # Installation
 
-INFIMA will be submitted to Bioconductor. Currently, INFIMA can be downloaded and installed in R by: 
+**INFIMA** will be submitted to Bioconductor. Currently, **INFIMA** can be downloaded and installed in R by: 
 
 ```{r eval=FALSE}
 devtools::install_github("ThomasDCY/INFIMA")
 ```
 
 
-*INFIMA* depends on the following \R{} packages:
+**INFIMA** depends on the following \R{} packages:
 
 (a) `r CRANpkg("data.table")` is used for formatting results that are easy for users to query.
 (b) `r Biocpkg("GenomicRanges")` is used for operating genomic intervals.
@@ -51,7 +51,7 @@ devtools::install_github("ThomasDCY/INFIMA")
 
 ## Input data
 
-In this section, we will illustrate how to use *INFIMA* with a simple example containing 10 DO genes in chr1.
+In this section, we will illustrate how to use **INFIMA** with a simple example containing 10 DO genes in chr1.
 
 ```{r eval=TRUE}
 library(INFIMA)
@@ -130,6 +130,7 @@ dt3[1,]
 
 ## Process the input data
 
+Process the input data as the inputs for the **INFIMA** model.
 ```{r}
 raw_data <- raw_input_data(dt1, dt2, dt3)
 model_data <- model_input_data(raw_data)
@@ -141,17 +142,101 @@ model_data <- model_input_data(raw_data)
 prior <- compute_prior(raw_data, model_data)
 ```
 
-## INFIMA model fitting
+## **INFIMA** model fitting
 
-```{r}
+```{r echo=FALSE}
 infima <- model_fitting(model_data, prior)
 ```
 
+```{r}
+summary(infima)
+```
+
+
 ## Analysis of the results
 
-```{r}
+After fitting the **INFIMA** model, we focus on the DO genes containing causal local-ATAC-QTL (FDR of 0.05). To maintain a reasonable credible set for each DO gene, we use two tuning parameters: cum.pprob and cred.set. cum.pprob stands for the minimum cumulative posterior probability required for the target credible set. cred.set stands for the maximum proportion of candidate SNPs allowed in the credible set.
+
+```{r echo=FALSE}
 infima_results <- snp_link_gene(infima, raw_data, model_data, prior, fdr = 0.05, cum.pprob = 0.8, cred.set = 0.5)
+```
+
+
+```{r}
 summary(infima_results)
+```
+
+
+The results of linking top local-ATAC-QTLs their target DO genes can be summarized by using as.data.frame} method. We will obtain a data frame summarizing the results with the following columns.
+
+name          | explanation
+------------- | ----------------------------------------
+snp_id ... alt | SNP information of the causal local-ATAC-QTLs 
+ensembl ... lod | DO-eQTL data: DO gene & marker information 
+footprint | the footprint information 
+footprint.rs | the footprint information rank score 
+dist | the distance score component in the prior 
+dist.rs | the distance rank score 
+cor.A.E | the Correlation between ATAC-seq signal and gene expression 
+cor.A.E.rs | the cor.A.E rank score 
+cor.A.B | the Correlation between ATAC-seq signal and founder effect size 
+cor.A.B.rs | the cor.A.B rank score 
+p | the total number of candidates 
+k | the number of candidates in the credible set 
+Z | the posterior probabilities of the output 
+Z.rs | the rank score of the posterior probabilities 
+
+```{r}
+as.data.frame(infima_results)
+```
+
+
+In particular, if we would like to see the input data, we can use the following function given the SNP ID of the causal local-ATAC-QTL, the ENSEMBL ID of the putative target DO gene, and the name of the eQTL marker.
+
+```{r}
+input_query <- query_input_data(infima_results, snp_id = 'rs51076312', ensembl = 'ENSMUSG00000037995', qtl_marker = '1_172713578')
+```
+
+name          | explanation
+------------- | ----------------------------------------
+  Y | DO allelic effects 
+  Y.t | DO allelic effects (trinarized, B6 as reference) 
+  A | local ATAC-seq signal 
+  A.t | local ATAC-seq signal (trinarized, B6 as reference) 
+  B | founder gene expressions from all samples 
+  B.avg | average founder gene expressions from all strains 
+  B.t | average founder gene expressions from all strains (trinarized, B6 as reference) 
+  D | edit distance, the difference between Y.t and E.t 
+  E.t | founder allelic effects (trinarized, B6 as reference) 
+  snpData | the information of the query local-ATAC-QTL 
+  snp_id | the SNP id of the query local-ATAC-QTL 
+  ensembl | the ensembl id of the query DO gene 
+  qtl_marker | the name of the QTL marker of the query DO gene, a DO gene may correspond to multiple markers 
+
+```{r}
+str(input_query)
+```
+
+
+We may also visualize the input data query:
+
+```{r}
+plot_input(input_query, option = 1) ## DO allele effect data
+```
+
+
+```{r}
+plot_input(input_query, option = 2) ## ATAC-seq data
+```
+
+
+```{r}
+plot_input(input_query, option = 3) ## RNA-seq data
+```
+
+
+```{r}
+plot_input(input_query, option = 4) ## edit distance and founder allele effect
 ```
 
 

@@ -10,7 +10,7 @@
 #' @param model_data The output from \code{\link{model_input_data}}.
 #' @param fdr The False Discovery Rate cutoff with direct posterior probability
 #' approach (Newton, 2004). Default 0.1.
-#' @param cum.pprob The maximum cumulative posterior probability for
+#' @param cum.pprob The minimum cumulative posterior probability required for
 #' the target credible set. Default 0.8. Take values between 0 and 1.
 #' @param cred.set The maximum proportion of candidate SNPs allowed
 #' in the credible set. Default 0.5. Take values between 0 and 1.
@@ -370,7 +370,9 @@ query_input_data <- function(x,
 }
 
 
-
+#' @name summary
+#' @title summary
+#' @export
 summary <- function(x) {
   UseMethod('summary', x)
 }
@@ -447,24 +449,36 @@ summary.infima <- function(x, ...) {
 
 
 
-#' @name plot
-#' @title plot of input_query
-#' @method plot input_query
+#' @name plot_input
+#' @title plot the query input data
 #'
 #' @description S3 method for the class \code{input_query}
 #'
 #' @param x The \code{input_query} S3 class
 #' @param option Which piece of data to plot
+#' 
 #' 1: DO allele effect data
+#' 
 #' 2: ATAC-seq data
+#' 
 #' 3: founder gene expression data
+#' 
 #' 4: edit distance and founder allele efect
+#' 
 #' @param ... Additional arguments
+#' 
+#' @return Plots
+#' 
+#' @examples
+#' plot_input(input_query, option = 1) ## DO allele effect data
+#' plot_input(input_query, option = 2) ## ATAC-seq data
+#' plot_input(input_query, option = 3) ## RNA-seq data
+#' plot_input(input_query, option = 4) ## edit distance and founder allele effect
+#' 
 #'
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
-#' @import ggplot2
 #' @export
-plot.input_query <- function(x, option = NULL){
+plot_input <- function(x, option = NULL, ...){
   stopifnot(class(x) == 'input_query')
   
   if(is.null(option)){
@@ -497,6 +511,7 @@ plot.input_query <- function(x, option = NULL){
          col = colors, pch = 19)
     axis(1, at=1:8, labels = names(x$Y.t))
     par(grid)
+    
   }
   
   if(option == 2){
@@ -541,13 +556,15 @@ plot.input_query <- function(x, option = NULL){
 }
 
 
-
+#' @name as.data.frame
+#' @title as.data.frame
+#' @export
 as.data.frame <- function(x) {
   UseMethod('as.data.frame', x)
 }
 
 
-#' @name as.data.frame.infima_results
+#' @name as.data.frame
 #' @title as.data.frame for infima_results
 #' @description The S3 method for the class \code{infima_results}
 #'

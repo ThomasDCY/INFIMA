@@ -4,8 +4,10 @@
 \alias{summary}
 \alias{summary.infima_results}
 \alias{summary.infima}
-\title{summary of infima_results}
+\title{summary}
 \usage{
+summary(x)
+
 \method{summary}{infima_results}(x, ...)
 
 \method{summary}{infima}(x, ...)

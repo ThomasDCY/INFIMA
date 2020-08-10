@@ -26,7 +26,7 @@ snp_link_gene(
 \item{fdr}{The False Discovery Rate cutoff with direct posterior probability
 approach (Newton, 2004). Default 0.1.}
 
-\item{cum.pprob}{The maximum cumulative posterior probability for
+\item{cum.pprob}{The minimum cumulative posterior probability required for
 the target credible set. Default 0.8. Take values between 0 and 1.}
 
 \item{cred.set}{The maximum proportion of candidate SNPs allowed
