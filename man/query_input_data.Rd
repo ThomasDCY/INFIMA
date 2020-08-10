@@ -21,6 +21,10 @@ an input_query class, which is a list of input data corresponding to the query
 \description{
 The S3 method for the class \code{infima_results}
 }
+\examples{
+input_query <- query_input_data(infima_results, snp_id = 'rs51076312', ensembl = 'ENSMUSG00000037995', qtl_marker = '1_172713578')
+
+}
 \author{
 Chenyang Dong \email{cdong@stat.wisc.edu}
 }

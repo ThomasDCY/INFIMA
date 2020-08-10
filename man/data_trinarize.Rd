@@ -17,7 +17,7 @@ A numeric matrix after trinarization.
 \description{
 This function trinarizes numeric matrix rowwisely
 to \{-1,0,1\}. The matrix should have 8 columns corresponding to
-8 founder strains \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}.
+8 founder strains \code{129, AJ, B6, CAST, NOD, NZO, PWK, WSB}.
 
 First, each row of the matrix is standardized to [0,1].
 

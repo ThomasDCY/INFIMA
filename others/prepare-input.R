@@ -11,10 +11,10 @@ do.eqtl <- do.eqtl[indicator]
 index.founder <- do.eqtl$index_founder
 
 #### INPUT DATASET 1: DO-eQTL data
-# A=A/J, B=B6, C=129, D=NOD, E=NZO, F=Cast, G=PWK, H=WSB
+# A=A/J, B=B6, C=129, D=NOD, E=NZO, F=CAST, G=PWK, H=WSB
 Y <- do.eqtl[,A:H]
 Y <- Y[,c(3,1,2,6,4,5,7,8)]
-colnames(Y) <- c('129','AJ','B6','Cast','NOD','NZO','PWK','WSB')
+colnames(Y) <- c('129','AJ','B6','CAST','NOD','NZO','PWK','WSB')
 do.eqtl <- cbind(do.eqtl[,-(A:H)], Y)
 do.eqtl$cis <- NULL
 do.eqtl$index_founder <- NULL
@@ -28,7 +28,7 @@ samples <- sapply(colnames(rna.seq), function(x){
 names(samples) <- NULL
 colnames(rna.seq) <- samples
 dt2 <- rna.seq
-
+colnames(dt2) <- gsub('Cast', 'CAST', colnames(dt2))
 
 #### INPUT DATASET 3: ATAC-seq data and the local-ATAC-QTL data
 colnames(snpData)
@@ -40,18 +40,29 @@ snp.info <- as.data.table(snpData)[,c('Name','Chr','SNP','REF','ALT')]
 colnames(snp.info) <- c('snp_id','chr','snp_pos','ref','alt')
 dt3 <- cbind(snp.info, genotype, atac.seq)
 dt3$footprint <- FF
+colnames(dt3) <- gsub('Cast', 'CAST', colnames(dt3))
 
-
-save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/data/inputs.RData')
-write.table(dt1[chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/data/input1-chr1.csv', sep = ',',
+save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/others/inputs.RData')
+write.table(dt1[chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/others/input1-chr1.csv', sep = ',',
             quote = F, row.names = F, col.names = T)
-write.table(dt2[dt1$chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/data/input2-chr1.csv', sep = ',',
+write.table(dt2[dt1$chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/others/input2-chr1.csv', sep = ',',
             quote = F, row.names = F, col.names = T)
-write.table(dt3[chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/data/input3-chr1.csv', sep = ',',
+write.table(dt3[chr == 'chr1'], file = '~/Documents/GitHub/INFIMA/others/input3-chr1.csv', sep = ',',
             quote = F, row.names = F, col.names = T)
 
 ind <- dt1$chr == 'chr1'
 dt1 <- dt1[ind]
 dt2 <- dt2[ind]
 dt3 <- dt3[chr == 'chr1']
-save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/data/inputs-chr1.RData')
+save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/others/inputs-chr1.RData')
+
+
+filename1 <- '~/Documents/GitHub/INFIMA/others/input1-chr1.csv'
+filename2 <- '~/Documents/GitHub/INFIMA/others/input2-chr1.csv'
+filename3 <- '~/Documents/GitHub/INFIMA/others/input3-chr1.csv'
+dt1 <- fread(filename1)
+dt2 <- fread(filename2)
+dt3 <- fread(filename3)
+dt1 <- dt1[1:10]
+dt2 <- dt2[1:10]
+save(dt1, dt2, dt3, file = '~/Documents/GitHub/INFIMA/data/example-10-genes.rda')

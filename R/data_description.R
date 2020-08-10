@@ -160,7 +160,7 @@ NULL
 #' @name Y
 #' @title Y
 #' @description raw DO-eQTL signal
-#' @docType variable name
+#' @docType data
 #' @format 8-dimension vector
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -170,7 +170,7 @@ NULL
 #' @name Y.t
 #' @title Y.t
 #' @description trinarized DO-eQTL signal
-#' @docType variable name
+#' @docType data
 #' @format 8-dimension vector
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -180,7 +180,7 @@ NULL
 #' @name A
 #' @title A
 #' @description local ATAC-seq signal
-#' @docType variable name
+#' @docType data
 #' @format 8-column matrix, each row correspond to a local-ATAC-QTL
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -190,7 +190,7 @@ NULL
 #' @name A.t
 #' @title A.t
 #' @description trinarized local ATAC-seq signal
-#' @docType variable name
+#' @docType data
 #' @format 8-column matrix, each row correspond to a local-ATAC-QTL
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -200,7 +200,7 @@ NULL
 #' @name B
 #' @title B
 #' @description founder gene expressions (all samples)
-#' @docType variable name
+#' @docType data
 #' @format a vector
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -210,7 +210,7 @@ NULL
 #' @name B.avg
 #' @title B.avg
 #' @description founder gene expressions (averaged over strains)
-#' @docType variable name
+#' @docType data
 #' @format a vector
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -220,7 +220,7 @@ NULL
 #' @name B.t
 #' @title B.t
 #' @description trinarized founder gene expressions (averaged over strains)
-#' @docType variable name
+#' @docType data
 #' @format a vector
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -230,7 +230,7 @@ NULL
 #' @name do.eqtl
 #' @title do.eqtl
 #' @description DO-eQTL data: DO gene & marker information
-#' @docType variable name
+#' @docType data
 #' @format a data table
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -240,7 +240,7 @@ NULL
 #' @name snpData
 #' @title snpData
 #' @description SNP information of causal local-ATAC-QTLs
-#' @docType variable name
+#' @docType data
 #' @format a data table
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -250,7 +250,7 @@ NULL
 #' @name D
 #' @title D
 #' @description the edit distance, absolute difference between DO and founder allelic effects
-#' @docType variable name
+#' @docType data
 #' @format 8-column matrix, each row correspond to a local-ATAC-QTL
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -260,7 +260,7 @@ NULL
 #' @name E.t
 #' @title E.t
 #' @description the trinarized founder allelic effects
-#' @docType variable name
+#' @docType data
 #' @format 8-column matrix, each row correspond to a local-ATAC-QTL
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -270,7 +270,7 @@ NULL
 #' @name footprint
 #' @title footprint
 #' @description the footprint vector
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -280,7 +280,7 @@ NULL
 #' @name footprint.rs
 #' @title footprint.rs
 #' @description the footprint rank score vector
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -289,7 +289,7 @@ NULL
 #' @name dist
 #' @title dist
 #' @description the distance score component in the prior
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -299,7 +299,7 @@ NULL
 #' @name dist.rs
 #' @title dist.rs
 #' @description the distance rank score component in the prior
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -309,7 +309,7 @@ NULL
 #' @name cor.A.E
 #' @title cor.A.E
 #' @description the correlation between ATAC-seq signal and gene expression
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -319,7 +319,7 @@ NULL
 #' @name cor.A.E.rs
 #' @title cor.A.E.rs
 #' @description the rank score of the correlation between ATAC-seq signal and gene expression
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -329,7 +329,7 @@ NULL
 #' @name cor.A.R
 #' @title cor.A.R
 #' @description the correlation between ATAC-seq signal and founder effect size
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -339,7 +339,7 @@ NULL
 #' @name cor.A.R.rs
 #' @title cor.A.R.rs
 #' @description the rank score of the correlation between ATAC-seq signal and founder effect size
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -349,7 +349,7 @@ NULL
 #' @name Z
 #' @title Z
 #' @description the posterior probabilities of the output
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
@@ -359,7 +359,7 @@ NULL
 #' @name Z.rs
 #' @title Z.rs
 #' @description the rank score of the posterior probabilities of the output
-#' @docType variable name
+#' @docType data
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL

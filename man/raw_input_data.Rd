@@ -11,24 +11,24 @@ raw_input_data(filename1 = NULL, filename2 = NULL, filename3 = NULL, ...)
 the path to a comma separated .csv file.
 Must contain the following columns with exactly the following column names in order:
 \tabular{ll}{
-ensembl \tab The Ensemble ID of DO-eQTL gene.\cr
+ensembl \tab The ensembl ID of DO-eQTL gene.\cr
 symbol \tab The symbol of DO-eQTL gene.\cr
 chr \tab The chromosome of DO-eQTL gene.\cr
 start \tab The start position of DO-eQTL gene.\cr
 end \tab The end position of DO-eQTL gene.\cr
 strand \tab The strand of DO-eQTL gene.\cr
-qtl_marker \tab The user-defined ID of DO-eQTL marker.\cr
+qtl_marker \tab The ID of DO-eQTL marker.\cr
 qtl_chr \tab The chromosome of DO-eQTL marker.\cr
 qtl_pos \tab The position of DO-eQTL marker.\cr
 lod \tab The LOD score of DO-eQTL marker.\cr
 }
-Plus 8 columns named \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}
+Plus 8 columns named \code{129, AJ, B6, CAST, NOD, NZO, PWK, WSB}
 recording the DO-eQTL allelic dependence measures for the 8 strains.}
 
 \item{filename2}{Founder RNA-seq data, a matrix, a data frame or
 the path to a comma separated .csv file.
 DO gene (row) by sample (column) matrix with normalized gene expressions.
-The column names must be strain names \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB}
+The column names must be strain names \code{129, AJ, B6, CAST, NOD, NZO, PWK, WSB}
 and there must be at least one sample for each strain.
 One caveat is that the rows of founder RNA-seq data should
 correspond to the rows of DO-eQTL data (the same DO gene), i.e. the first two input files
@@ -52,11 +52,11 @@ the footprint analysis is not applicable. \cr
 Plus
 
 (a) 8 columns named as \code{strain-genotype} where \code{strain}
-is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. 0 means reference
+is \code{129, AJ, B6, CAST, NOD, NZO, PWK, WSB} in order. 0 means reference
 nucleotide while 2 means alternative nucleotide.
 
 (b) 8 columns named as \code{strain-ATAC-seq} where \code{strain}
-is \code{129, AJ, B6, Cast, NOD, NZO, PWK, WSB} in order. The normalized
+is \code{129, AJ, B6, CAST, NOD, NZO, PWK, WSB} in order. The normalized
 local ATAC-seq signal of the SNP.}
 }
 \value{

@@ -14,7 +14,7 @@
 #' Default \code{alpha_init = c(0.6, 0.3, 0.1)}.
 #' @param beta_init The initial parameters of beta:
 #' The three-dimensional multinomial parameters for the generative model 
-#' of wild strains \code{Cast, PWK, WSB}.
+#' of wild strains \code{CAST, PWK, WSB}.
 #' Default \code{alpha_init = c(0.5, 0.4, 0.1)}.
 #' @param gamma_init The initial value of gamma: 
 #' the grand probability of a DO gene to be causal.

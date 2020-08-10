@@ -276,6 +276,101 @@ snp_link_gene <-
 
 
 
+#' @name query_input_data
+#' @title Given query snp_id and ensembl id, return the multi-omics input data.
+#' @description The S3 method for the class \code{infima_results}
+#'
+#' @param x The S3 class \code{infima_results}
+#' @param snp_id The query snp_id of local-ATAC-QTL
+#' @param ensembl The query ensembl column value of DO-eQTL data
+#' @param qtl_marker The query qtl_marker column value of DO-eQTL data
+#' @return an input_query class, which is a list of input data corresponding to the query
+#' 
+#' @examples 
+#' input_query <- query_input_data(infima_results, snp_id = 'rs51076312', ensembl = 'ENSMUSG00000037995', qtl_marker = '1_172713578')
+#' 
+#' @author Chenyang Dong \email{cdong@stat.wisc.edu}
+#' 
+#' @rawNamespace import(data.table, except = shift)
+#' @export
+query_input_data <- function(x,
+                             snp_id = NULL,
+                             ensembl = NULL,
+                             qtl_marker = NULL,
+                             ...) {
+  stopifnot(class(x) == 'infima_results')
+  
+  stopifnot(exprs = {
+    !is.null(snp_id)
+    ! is.null(ensembl)
+    ! is.null(qtl_marker)
+  })
+  
+  infima <- x$infima
+  results <- x$results
+  results <- results[sapply(results, function(x)
+    ! is.null(x))]
+  
+  # find the indices
+  ensembls <-
+    sapply(results, function(x)
+      x$input_data$do.eqtl$ensembl)
+  qtl_markers <-
+    sapply(results, function(x)
+      x$input_data$do.eqtl$qtl_marker)
+  
+  if (!ensembl %in% ensembls) {
+    message('ensembl id not found!')
+    return(NULL)
+  }
+  
+  if (!qtl_marker %in% qtl_markers) {
+    message('qtl_marker id not found!')
+    return(NULL)
+  }
+  
+  if (!(ensembl %in% ensembls && qtl_marker %in% qtl_markers)) {
+    message('ensembl and qtl marker combination not found!')
+    return(NULL)
+  }
+  
+  # This is uniquely defined
+  current <-
+    results[ensembls == ensembl & qtl_markers == qtl_marker][[1]]
+  input_data <- current$input_data
+  
+  snps <- input_data$snpData$snp_id
+  
+  if (!snp_id %in% snps) {
+    message('snp id not found!')
+    return(NULL)
+  }
+  
+  ind <- snps == snp_id
+  
+  res <- list(
+    Y = input_data$Y,
+    Y.t = input_data$Y.t,
+    A = input_data$A[ind, ],
+    A.t = input_data$A.t[ind, ],
+    B = input_data$B,
+    B.avg = input_data$B.avg,
+    B.t = input_data$B.t,
+    D = input_data$D[ind, ],
+    E.t = input_data$E.t[ind, ],
+    do.eqtl = input_data$do.eqtl,
+    snpData = input_data$snpData[ind, ],
+    snp_id = snp_id,
+    ensembl = ensembl,
+    qtl_marker = qtl_marker
+  )
+  
+  class(res) <- 'input_query'
+  return(res)
+}
+
+
+
 summary <- function(x) {
   UseMethod('summary', x)
 }
@@ -352,6 +447,101 @@ summary.infima <- function(x, ...) {
 
 
 
+#' @name plot
+#' @title plot of input_query
+#' @method plot input_query
+#'
+#' @description S3 method for the class \code{input_query}
+#'
+#' @param x The \code{input_query} S3 class
+#' @param option Which piece of data to plot
+#' 1: DO allele effect data
+#' 2: ATAC-seq data
+#' 3: founder gene expression data
+#' 4: edit distance and founder allele efect
+#' @param ... Additional arguments
+#'
+#' @author Chenyang Dong \email{cdong@stat.wisc.edu}
+#' @import ggplot2
+#' @export
+plot.input_query <- function(x, option = NULL){
+  stopifnot(class(x) == 'input_query')
+  
+  if(is.null(option)){
+    stop('Please input the option argument!')
+  }
+  
+  if(! option %in% c(1,2,3,4)){
+    stop('Invalid value for the option argument!')
+  }
+  
+  colors <- c(rgb(240, 128, 128, maxColorValue = 255, alpha = 255),
+              rgb(218, 165, 32, maxColorValue = 255, alpha = 255),
+              rgb(128, 128, 128, maxColorValue = 255, alpha = 255),
+              rgb(0, 160, 0, maxColorValue = 255, alpha = 255),
+              rgb(16, 16, 240, maxColorValue = 255, alpha = 255),
+              rgb(0, 160, 240, maxColorValue = 255, alpha = 255),
+              rgb(240, 0, 0, maxColorValue = 255, alpha = 255),
+              rgb(144, 0, 224, maxColorValue = 255, alpha = 255))
+
+  if(option == 1){
+    grid <- par(mfrow = c(1,2), 
+                mar = c(1,1,1,1) + 3)
+    plot(x$Y, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'DO allele effect',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$Y))
+    
+    plot(x$Y.t, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'DO allele effect (trinarized)',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$Y.t))
+    par(grid)
+  }
+  
+  if(option == 2){
+    plot(x$A, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'Local ATAC-seq signal',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$A))
+    
+    plot(x$A.t, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'Local ATAC-seq signal (trinarized)',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$A.t))
+    par(grid)
+  }
+  
+  if(option == 3){
+    plot(x$B.avg, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'Founder gene expression',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$B.avg))
+    
+    plot(x$B.t, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'Founder gene expression (trinarized)',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$B.t))
+    par(grid)
+  }
+  
+  if(option == 4){
+    plot(x$E.t, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'Founder allele effect (trinarized)',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$E.t))
+    
+    plot(x$D, main = '', xaxt = 'n', 
+         xlab = 'Strain', ylab = 'Edit distance',
+         col = colors, pch = 19)
+    axis(1, at=1:8, labels = names(x$E.t))
+    
+    par(grid)
+  }
+}
+
+
+
 as.data.frame <- function(x) {
   UseMethod('as.data.frame', x)
 }
@@ -409,6 +599,7 @@ as.data.frame.infima_results <-
       
       dt1 <- input_data$snpData[, snp_id:alt]
       dt2 <- input_data$do.eqtl
+      colnames(dt2)[colnames(dt2) == 'chr'] <- 'gene_chr'
       dt3 <- data.table(
         cor.A.E = input_data$cor.A.E,
         cor.A.E.rs = output_data$cor.A.E.rs,
@@ -432,91 +623,3 @@ as.data.frame.infima_results <-
 
 
 
-#' @name query_input_data
-#' @title Given query snp_id and ensembl id, return the multi-omics input data.
-#' @description The S3 method for the class \code{infima_results}
-#'
-#' @param x The S3 class \code{infima_results}
-#' @param snp_id The query snp_id of local-ATAC-QTL
-#' @param ensembl The query ensembl column value of DO-eQTL data
-#' @param qtl_marker The query qtl_marker column value of DO-eQTL data
-#' @return an input_query class, which is a list of input data corresponding to the query
-#' 
-#' @author Chenyang Dong \email{cdong@stat.wisc.edu}
-#' 
-#' @rawNamespace import(data.table, except = shift)
-#' @export
-query_input_data <- function(x,
-                             snp_id = NULL,
-                             ensembl = NULL,
-                             qtl_marker = NULL,
-                             ...) {
-  stopifnot(class(x) == 'infima_results')
-  
-  stopifnot(exprs = {
-    !is.null(snp_id)
-    ! is.null(ensembl)
-    ! is.null(qtl_marker)
-  })
-  
-  infima <- x$infima
-  results <- x$results
-  results <- results[sapply(results, function(x)
-    ! is.null(x))]
-  
-  # find the indices
-  ensembls <-
-    sapply(results, function(x)
-      x$input_data$do.eqtl$ensembl)
-  qtl_markers <-
-    sapply(results, function(x)
-      x$input_data$do.eqtl$qtl_marker)
-  
-  if (!ensembl %in% ensembls) {
-    message('ensembl id not found!')
-    return(NULL)
-  }
-  
-  if (!qtl_marker %in% qtl_markers) {
-    message('qtl_marker id not found!')
-    return(NULL)
-  }
-  
-  if (!(ensembl %in% ensembls && qtl_marker %in% qtl_markers)) {
-    message('ensembl and qtl marker combination not found!')
-    return(NULL)
-  }
-  
-  # This is uniquely defined
-  current <-
-    results[ensembls == ensembl & qtl_markers == qtl_marker][[1]]
-  input_data <- current$input_data
-  
-  snps <- input_data$snpData$snp_id
-  
-  if (!snp_id %in% snps) {
-    message('snp id not found!')
-    return(NULL)
-  }
-  
-  ind <- snps == snp_id
-  
-  res <- list(
-    Y = input_data$Y,
-    Y.t = input_data$Y.t,
-    A = input_data$A[ind, ],
-    A.t = input_data$A.t[ind, ],
-    B = input_data$B,
-    B.avg = input_data$B.avg,
-    B.t = input_data$B.t,
-    D = input_data$D[ind, ],
-    E.t = input_data$E.t[ind, ],
-    snpData = input_data$snpData[ind, ],
-    snp_id = snp_id,
-    ensembl = ensembl,
-    qtl_marker = qtl_marker
-  )
-  
-  class(res) <- 'input_query'
-  return(res)
-}
