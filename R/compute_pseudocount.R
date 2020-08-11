@@ -1,18 +1,18 @@
 #' @name compute_prior
 #' @title Compute Dirichlet prior
-#' @description For the candidate SNPs of each row of DO-eQTL data, 
+#' @description For the candidate SNPs of each row of DO-eQTL data,
 #' keep track of their the distance scores, footprinting annotations,
 #' correlations between local ATAC-seq signal and effect size,
 #' correlations between local ATAC-seq signal and gene expression.
 #' @param raw_data The output from \code{raw_input_data}
 #' @param model_data The output from  \code{model_input_data}
 #' @param n_cores The number of cores for parallel computing.
-#' @param verbose Print messages or not. 
+#' @param verbose Print messages or not.
 #' Default = \code{detectCores() - 2}.
-#' 
-#' 
+#'
+#'
 #' @return A prior data object.
-#' 
+#'
 #' \tabular{ll}{
 #' \code{PI} \tab The overall prior term. \cr
 #' \code{dist} \tab The distance score. \cr
@@ -33,9 +33,9 @@
 #' @rawNamespace import(data.table, except = shift)
 #' @export
 compute_prior <- function(raw_data = NULL,
-                                model_data = NULL,
-                                n_cores = detectCores() - 2,
-                                verbose = TRUE) {
+                          model_data = NULL,
+                          n_cores = detectCores() - 2,
+                          verbose = TRUE) {
   if (is.null(raw_data)) {
     stop('Error: please input the raw_data.')
   }
@@ -66,7 +66,7 @@ compute_prior <- function(raw_data = NULL,
   window <- model_data$window
   
   stopifnot(exprs = {
-    ! is.null(AA)
+    !is.null(AA)
     ! is.null(EE)
     ! is.null(BB)
     ! is.null(do.eqtl)
@@ -89,7 +89,7 @@ compute_prior <- function(raw_data = NULL,
   
   registerDoParallel(cores = n_cores)
   
-  if(verbose){
+  if (verbose) {
     message(paste('n_cores =', n_cores))
   }
   
@@ -132,10 +132,10 @@ compute_prior <- function(raw_data = NULL,
         }
         
         # correlation of founder RNA-seq vs ATAC-seq score
-        cor.A.B[k] <- cor(BB[g, ], AA[snp_index[[g]][k], ])
+        cor.A.B[k] <- cor(BB[g,], AA[snp_index[[g]][k],])
         # correlation of ATAC-seq and allelic effect of founder gene
         cor.A.E[k] <-
-          cor(AA[snp_index[[g]][k], ], EE[snp_index[[g]][k], ])
+          cor(AA[snp_index[[g]][k],], EE[snp_index[[g]][k],])
         
         # distance prior
         PI[k] <- dist[k]
@@ -156,10 +156,14 @@ compute_prior <- function(raw_data = NULL,
     ))
   }
   
-  PI <- lapply(r, function(x) x$PI)
-  dist <- lapply(r, function(x) x$dist)
-  cor.A.B <- lapply(r, function(x) x$cor.A.B)
-  cor.A.E <- lapply(r, function(x) x$cor.A.E)
+  PI <- lapply(r, function(x)
+    x$PI)
+  dist <- lapply(r, function(x)
+    x$dist)
+  cor.A.B <- lapply(r, function(x)
+    x$cor.A.B)
+  cor.A.E <- lapply(r, function(x)
+    x$cor.A.E)
   
   prior <- list(
     PI = PI,
@@ -169,7 +173,7 @@ compute_prior <- function(raw_data = NULL,
     cor.A.E = cor.A.E
   )
   
-  if(verbose){
+  if (verbose) {
     cat("Time taken", proc.time()[3] - time.start[3])
   }
   
@@ -177,8 +181,3 @@ compute_prior <- function(raw_data = NULL,
   
   return(prior)
 }
-
-
-
-
-

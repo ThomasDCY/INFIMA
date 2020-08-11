@@ -194,17 +194,17 @@ snp_link_gene <-
         
         ###### organize each piece of input data as a list ######
         input_data <- list(
-          Y = YY[x,],
+          Y = YY[x, ],
           # raw DO-eQTL signal
           Y.t = Y.g[[x]],
           # trinarized DO-eQTL signal
-          A = AA[causal,],
+          A = AA[causal, ],
           # raw ATAC-seq signal
-          A.t = A.g[[x]][subset,],
+          A.t = A.g[[x]][subset, ],
           # trinarized ATAC-seq signal
-          B = rna.seq[x,],
+          B = rna.seq[x, ],
           # raw RNA-seq data (all samples)
-          B.avg = BB[x,],
+          B.avg = BB[x, ],
           # raw RNA-seq data (averaged)
           B.t = B.g[[x]],
           # trinarized RNA-seq data
@@ -212,11 +212,11 @@ snp_link_gene <-
           # DO-eQTL data: DO gene & marker information
           snpData = snpData[causal],
           # SNP information of causal local-ATAC-QTLs
-          D = D.g[[x]][subset,],
+          D = D.g[[x]][subset, ],
           # the edit distance
           footprint = FF[causal],
           # the footprint information
-          E.t = E.g[[x]][subset,],
+          E.t = E.g[[x]][subset, ],
           # the trinarized allelic effects
           dist = dist[[x]][subset],
           # the distance score component in the prior
@@ -285,12 +285,12 @@ snp_link_gene <-
 #' @param ensembl The query ensembl column value of DO-eQTL data
 #' @param qtl_marker The query qtl_marker column value of DO-eQTL data
 #' @return an input_query class, which is a list of input data corresponding to the query
-#' 
-#' @examples 
+#'
+#' @examples
 #' input_query <- query_input_data(infima_results, snp_id = 'rs51076312', ensembl = 'ENSMUSG00000037995', qtl_marker = '1_172713578')
-#' 
+#'
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
-#' 
+#'
 #' @rawNamespace import(data.table, except = shift)
 #' @export
 query_input_data <- function(x,
@@ -351,15 +351,15 @@ query_input_data <- function(x,
   res <- list(
     Y = input_data$Y,
     Y.t = input_data$Y.t,
-    A = input_data$A[ind, ],
-    A.t = input_data$A.t[ind, ],
+    A = input_data$A[ind,],
+    A.t = input_data$A.t[ind,],
     B = input_data$B,
     B.avg = input_data$B.avg,
     B.t = input_data$B.t,
-    D = input_data$D[ind, ],
-    E.t = input_data$E.t[ind, ],
+    D = input_data$D[ind,],
+    E.t = input_data$E.t[ind,],
     do.eqtl = input_data$do.eqtl,
-    snpData = input_data$snpData[ind, ],
+    snpData = input_data$snpData[ind,],
     snp_id = snp_id,
     ensembl = ensembl,
     qtl_marker = qtl_marker
@@ -456,100 +456,150 @@ summary.infima <- function(x, ...) {
 #'
 #' @param x The \code{input_query} S3 class
 #' @param option Which piece of data to plot
-#' 
+#'
 #' 1: DO allele effect data
-#' 
+#'
 #' 2: ATAC-seq data
-#' 
+#'
 #' 3: founder gene expression data
-#' 
+#'
 #' 4: edit distance and founder allele efect
-#' 
+#'
 #' @param ... Additional arguments
-#' 
+#'
 #' @return Plots
-#' 
+#'
 #' @examples
 #' plot_input(input_query, option = 1) ## DO allele effect data
 #' plot_input(input_query, option = 2) ## ATAC-seq data
 #' plot_input(input_query, option = 3) ## RNA-seq data
 #' plot_input(input_query, option = 4) ## edit distance and founder allele effect
-#' 
+#'
 #'
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 #' @export
-plot_input <- function(x, option = NULL, ...){
+plot_input <- function(x, option = NULL, ...) {
   stopifnot(class(x) == 'input_query')
   
-  if(is.null(option)){
+  if (is.null(option)) {
     stop('Please input the option argument!')
   }
   
-  if(! option %in% c(1,2,3,4)){
+  if (!option %in% c(1, 2, 3, 4)) {
     stop('Invalid value for the option argument!')
   }
   
-  colors <- c(rgb(240, 128, 128, maxColorValue = 255, alpha = 255),
-              rgb(218, 165, 32, maxColorValue = 255, alpha = 255),
-              rgb(128, 128, 128, maxColorValue = 255, alpha = 255),
-              rgb(0, 160, 0, maxColorValue = 255, alpha = 255),
-              rgb(16, 16, 240, maxColorValue = 255, alpha = 255),
-              rgb(0, 160, 240, maxColorValue = 255, alpha = 255),
-              rgb(240, 0, 0, maxColorValue = 255, alpha = 255),
-              rgb(144, 0, 224, maxColorValue = 255, alpha = 255))
-
-  if(option == 1){
-    grid <- par(mfrow = c(1,2), 
-                mar = c(1,1,1,1) + 3)
-    plot(x$Y, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'DO allele effect',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$Y))
+  colors <- c(
+    rgb(240, 128, 128, maxColorValue = 255, alpha = 255),
+    rgb(218, 165, 32, maxColorValue = 255, alpha = 255),
+    rgb(128, 128, 128, maxColorValue = 255, alpha = 255),
+    rgb(0, 160, 0, maxColorValue = 255, alpha = 255),
+    rgb(16, 16, 240, maxColorValue = 255, alpha = 255),
+    rgb(0, 160, 240, maxColorValue = 255, alpha = 255),
+    rgb(240, 0, 0, maxColorValue = 255, alpha = 255),
+    rgb(144, 0, 224, maxColorValue = 255, alpha = 255)
+  )
+  
+  if (option == 1) {
+    grid <- par(mfrow = c(1, 2),
+                mar = c(1, 1, 1, 1) + 3)
+    plot(
+      x$Y,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'DO allele effect',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$Y))
     
-    plot(x$Y.t, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'DO allele effect (trinarized)',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$Y.t))
+    plot(
+      x$Y.t,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'DO allele effect (trinarized)',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$Y.t))
     par(grid)
     
   }
   
-  if(option == 2){
-    plot(x$A, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'Local ATAC-seq signal',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$A))
+  if (option == 2) {
+    plot(
+      x$A,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'Local ATAC-seq signal',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$A))
     
-    plot(x$A.t, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'Local ATAC-seq signal (trinarized)',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$A.t))
+    plot(
+      x$A.t,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'Local ATAC-seq signal (trinarized)',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$A.t))
     par(grid)
   }
   
-  if(option == 3){
-    plot(x$B.avg, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'Founder gene expression',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$B.avg))
+  if (option == 3) {
+    plot(
+      x$B.avg,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'Founder gene expression',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$B.avg))
     
-    plot(x$B.t, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'Founder gene expression (trinarized)',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$B.t))
+    plot(
+      x$B.t,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'Founder gene expression (trinarized)',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$B.t))
     par(grid)
   }
   
-  if(option == 4){
-    plot(x$E.t, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'Founder allele effect (trinarized)',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$E.t))
+  if (option == 4) {
+    plot(
+      x$E.t,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'Founder allele effect (trinarized)',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$E.t))
     
-    plot(x$D, main = '', xaxt = 'n', 
-         xlab = 'Strain', ylab = 'Edit distance',
-         col = colors, pch = 19)
-    axis(1, at=1:8, labels = names(x$E.t))
+    plot(
+      x$D,
+      main = '',
+      xaxt = 'n',
+      xlab = 'Strain',
+      ylab = 'Edit distance',
+      col = colors,
+      pch = 19
+    )
+    axis(1, at = 1:8, labels = names(x$E.t))
     
     par(grid)
   }
@@ -588,9 +638,9 @@ as.data.frame <- function(x) {
 #' \code{Z} \tab the posterior probabilities of the output \cr
 #' \code{Z.rs} \tab the rank score of the posterior probabilities \cr
 #' }
-#' 
+#'
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
-#' 
+#'
 #' @rawNamespace import(data.table, except = shift)
 #' @import GenomicRanges
 #' @import parallel
@@ -637,6 +687,3 @@ as.data.frame.infima_results <-
     # the combined data table for INFIMA fine-mapping results
     return(do.call('rbind', res))
   }
-
-
-

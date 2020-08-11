@@ -363,5 +363,3 @@ NULL
 #' @format a vector, the dimension of which equals to the number of local-ATAC-QTLs
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 NULL
-
-

@@ -1,8 +1,8 @@
 ## INFIMA
 **INFIMA** is an R package for the **In**tegrative **Fi**ne-**Ma**pping with Model Organism Multi-Omics Data. **INFIMA** utilizes the diversity outbred (DO) mice population as the model organsim. The major usage of the **INFIMA** package is to fine-map the eQTL markers in DO studies (DO-eQTL). **INFIMA** implements an empirical Bayes model which quantifies how well each non-coding SNP explains the observed DO allelic patern through consistency of founder mice RNA-seq data, founder mice ATAC-seq data (including the existence and consistency of a footprint) with the observed allelic pattern. **INFIMA** assumes 0 or 1 causal SNPs for a DO-eQTL gene. Given a library of mouse SNPs, the corresponding local ATAC-seq signals, DO-eQTL data as well as the gene expression in founder mice, **INFIMA** provides the following functionalities:
 
-(a) Fine-mapping DO-eQTLs and estimate SNP-level posterior probabilities.
-(b) Linking SNPs or the local ATAC-seq peaks to effector genes.
+* Fine-mapping DO-eQTLs and estimate SNP-level posterior probabilities.
+* Linking SNPs or the local ATAC-seq peaks to effector genes.
 
 **INFIMA** results from DO studies can be mapped to human, which provides putative effector genes of human GWAS SNPs.
 
@@ -11,6 +11,7 @@
 **INFIMA** will be submitted to Bioconductor. Currently, **INFIMA** can be downloaded and installed in R by: 
 
 ```r
+# install.packages("devtools")
 devtools::install_github("ThomasDCY/INFIMA")
 ```
 
@@ -27,6 +28,11 @@ library(INFIMA)
 
 ## Use the example data
 data('example-10-genes')
+
+## dt1: DO mouse eQTL results
+## dt2: founder RNA-seq count matrix
+## dt3: SNP information (with footprint annotation) and the local ATAC-seq signal
+## For more information about the input data format, please refer to the vignette or ?raw_input_data
 raw_data <- raw_input_data(dt1, dt2, dt3)
 model_data <- model_input_data(raw_data)
 
@@ -36,8 +42,11 @@ prior <- compute_prior(raw_data, model_data)
 ## Model fitting
 infima <- model_fitting(model_data, prior)
 
-## After fitting the **INFIMA** model, we focus on the DO genes containing causal local-ATAC-QTL
+## After fitting the INFIMA model, we focus on the DO genes containing a causal SNP
 infima_results <- snp_link_gene(infima, raw_data, model_data, prior, fdr = 0.05, cum.pprob = 0.8, cred.set = 0.5)
+
+## Obtain the fine-mapping results
+## Link mouse SNPs to target genes
 results <- as.data.frame(infima_results)
 
 ## An example input data query
@@ -52,9 +61,10 @@ plot_input(input_query, option = 4) ## edit distance and founder allele effect
 
 ```
 
-See the vignette for this package for more information!
+See the vignette for more information!
 
-### References
+### Reference
 
+**C. Dong**, S. Simonett, S. Shin, D. Stapleton, G. Churchill, F. Jin, Y. Li, A. Attie, M. Keller, and **S. Keleş**, "INFIMA leverages multi-omics model organism data to identify target genes of human GWAS variants", *Manuscript*.
 
 

@@ -1,30 +1,30 @@
 #' @name model_fitting
 #' @title INFIMA model fitting
-#' 
+#'
 #' @description The main function for INFIMA model fitting.
 #' Taking inputs from founder ATAC-seq, founder RNA-seq, DO-eQTL
 #' as well as the footprinting annotation data, INFIMA outputs SNP-level
 #' quantifications to pinpoint the causal variants.
-#' 
+#'
 #' @param model_data The output from \code{\link{model_input_data}}.
 #' @param prior The output from \code{\link{compute_prior}}.
 #' @param alpha_init The initial parameters of alpha:
-#' The three-dimensional multinomial parameters for the generative model 
+#' The three-dimensional multinomial parameters for the generative model
 #' of normal strains \code{129, AJ, B6, NOD, NZO}.
 #' Default \code{alpha_init = c(0.6, 0.3, 0.1)}.
 #' @param beta_init The initial parameters of beta:
-#' The three-dimensional multinomial parameters for the generative model 
+#' The three-dimensional multinomial parameters for the generative model
 #' of wild strains \code{CAST, PWK, WSB}.
 #' Default \code{alpha_init = c(0.5, 0.4, 0.1)}.
-#' @param gamma_init The initial value of gamma: 
+#' @param gamma_init The initial value of gamma:
 #' the grand probability of a DO gene to be causal.
 #' Default \code{gamma_init = 0.5}.
-#' @param max_iter The maximum iteration allowed. 
+#' @param max_iter The maximum iteration allowed.
 #' Default \code{max_iter = 100}.
-#' @param verbose Print messages or not. 
+#' @param verbose Print messages or not.
 #' Default \code{verbose = TRUE}.
 #' @return An infima object containing the results after model fitting.
-#' 
+#'
 #' Parameters (see the paper for details):
 #' \tabular{ll}{
 #' \code{alpha} \tab The estimated \code{a1}. \cr
@@ -39,14 +39,14 @@
 #' \code{V.g} \tab The posterior probability for each DO gene to be causal. \cr
 #' \code{Z.g} \tab The posterior probability of candidate SNPs for each DO gene. \cr
 #' }
-#' 
+#'
 #' @examples
 #' data('example-10-genes')
 #' raw_data <- raw_input_data(dt1, dt2, dt3)
 #' model_data <- model_input_data(raw_data)
 #' prior <- compute_prior(raw_data, model_data)
 #' infima <- model_fitting(model_data, prior)
-#' 
+#'
 #' @seealso \code{\link{raw_input_data}}, \code{\link{model_input_data}}, \code{\link{compute_prior}}.
 #' @author Chenyang Dong \email{cdong@stat.wisc.edu}
 #' @rawNamespace import(data.table, except = shift)

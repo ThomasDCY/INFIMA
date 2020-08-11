@@ -300,7 +300,7 @@ data_trinarize <- function(mat, cutoff = 0.2) {
 #' Default 0.2. See \code{\link{data_trinarize}}.
 #' @param n_cores The number of cores for parallel computing.
 #' Default = \code{detectCores() - 2}.
-#' @param verbose Print messages or not. 
+#' @param verbose Print messages or not.
 #' Default \code{verbose = TRUE}.
 #' @return A model_data object: the processed data objects are broken down
 #' into small elements for each row of the DO-eQTL data.
@@ -365,7 +365,7 @@ model_input_data <- function(raw_data = NULL,
   snpData <- raw_data$snpData
   
   stopifnot(exprs = {
-    ! is.null(YY)
+    !is.null(YY)
     ! is.null(AA)
     ! is.null(EE)
     ! is.null(rna.seq)
@@ -396,7 +396,7 @@ model_input_data <- function(raw_data = NULL,
   
   registerDoParallel(cores = n_cores)
   
-  if(verbose){
+  if (verbose) {
     message(paste('n_cores =', n_cores))
   }
   
@@ -404,8 +404,8 @@ model_input_data <- function(raw_data = NULL,
     # if (verbose) {
     #   message(paste('Current row in DO-eQTL data:', g))
     # }
-    Y.g <- YY.t[g, ]
-    B.g <- BB.t[g, ]
+    Y.g <- YY.t[g,]
+    B.g <- BB.t[g,]
     # find associated SNPs
     snp.loc <- GRanges(
       seqnames = do.eqtl$qtl_chr[g],
@@ -428,12 +428,12 @@ model_input_data <- function(raw_data = NULL,
     
     if (!identical(index, integer(0))) {
       # there exist at least one overlap
-      A.g <- AA.t[index, ]
+      A.g <- AA.t[index,]
       F.g <- FF[index]
-      E.g <- EE[index, ] # genotype.g
+      E.g <- EE[index,] # genotype.g
       
       # get effect size E.g
-      exp.g <- rna.seq[g, ] # gene expression
+      exp.g <- rna.seq[g,] # gene expression
       atac.qtls.g <- genotype[, index] # regressors
       
       if (is.null(dim(E.g))) {
@@ -451,42 +451,52 @@ model_input_data <- function(raw_data = NULL,
         pval <- summary(lm)$coefficients[2, 4]
         M <- 0
         if (pval < 0.05) {
-          M <- ifelse(estimate > 0, 1,-1)
+          M <- ifelse(estimate > 0, 1, -1)
         }
-        E.g[i, ] <- E.g[i, ] / 2 * M
+        E.g[i,] <- E.g[i,] / 2 * M
       }
       
       # compute the absolute distance
       D.g <- matrix(0, nrow(E.g), ncol(E.g))
       for (i in 1:nrow(E.g)) {
-        D.g[i, ] <- abs(E.g[i, ] - Y.g)
+        D.g[i,] <- abs(E.g[i,] - Y.g)
       }
       
     }
     
-    return(list(
-      E.g = E.g,
-      Y.g = Y.g,
-      A.g = A.g,
-      F.g = F.g,
-      D.g = D.g,
-      B.g = B.g,
-      snp_index = snp_index,
-      p.g = p.g
-    ))
+    return(
+      list(
+        E.g = E.g,
+        Y.g = Y.g,
+        A.g = A.g,
+        F.g = F.g,
+        D.g = D.g,
+        B.g = B.g,
+        snp_index = snp_index,
+        p.g = p.g
+      )
+    )
   }
   
   
-  E.g <- lapply(r, function(x) x$E.g)
-  Y.g <- lapply(r, function(x) x$Y.g)
-  A.g <- lapply(r, function(x) x$A.g)
-  F.g <- lapply(r, function(x) x$F.g)
-  D.g <- lapply(r, function(x) x$D.g)
-  B.g <- lapply(r, function(x) x$B.g)
-  p.g <- sapply(r, function(x) x$p.g)
-  snp_index <- lapply(r, function(x) x$snp_index)
+  E.g <- lapply(r, function(x)
+    x$E.g)
+  Y.g <- lapply(r, function(x)
+    x$Y.g)
+  A.g <- lapply(r, function(x)
+    x$A.g)
+  F.g <- lapply(r, function(x)
+    x$F.g)
+  D.g <- lapply(r, function(x)
+    x$D.g)
+  B.g <- lapply(r, function(x)
+    x$B.g)
+  p.g <- sapply(r, function(x)
+    x$p.g)
+  snp_index <- lapply(r, function(x)
+    x$snp_index)
   
-  if(verbose){
+  if (verbose) {
     cat("Time taken", proc.time()[3] - time.start[3])
   }
   
@@ -504,10 +514,3 @@ model_input_data <- function(raw_data = NULL,
   class(model_data) <- 'model_data'
   return(model_data)
 }
-
-
-
-
-
-
-

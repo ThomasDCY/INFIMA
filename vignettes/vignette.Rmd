@@ -27,8 +27,8 @@ suppressWarnings(library(knitr))
 
 This document provides an introduction to the **In**tegrative **Fi**ne-**Ma**pping with Model Organism Multi-Omics Data using the **INFIMA** package. **INFIMA** utilizes the diversity outbred (DO) mice population as the model organsim. The major usage of the **INFIMA** package is to fine-map the eQTL markers in DO studies (DO-eQTL). **INFIMA** implements an empirical Bayes model which quantifies how well each non-coding SNP explains the observed DO allelic patern through consistency of founder mice RNA-seq data, founder mice ATAC-seq data (including the existence and consistency of a footprint) with the observed allelic pattern. **INFIMA** assumes 0 or 1 causal SNPs for a DO-eQTL gene. Given a library of mouse SNPs, the corresponding local ATAC-seq signals, DO-eQTL data as well as the gene expression in founder mice, **INFIMA** provides the following functionalities:
 
-(a) Fine-mapping DO-eQTLs and estimate SNP-level posterior probabilities.
-(b) Linking SNPs or the local ATAC-seq peaks to effector genes.
+* Fine-mapping DO-eQTLs and estimate SNP-level posterior probabilities.
+* Linking SNPs or the local ATAC-seq peaks to effector genes.
 
 **INFIMA** results from DO studies can be mapped to human, which provides putative effector genes of human GWAS SNPs.
 
@@ -66,7 +66,7 @@ The DO-eQTL data frame should contain the following columns:
 
 name          | explanation
 ------------- | ----------------------------------------
-ensembl       | The ensembl ID of DO-eQTL gene.
+ensembl      | The ensembl ID of DO-eQTL gene.
 symbol        | The symbol of DO-eQTL gene.
 chr           | The chromosome of DO-eQTL gene.
 start         | The start position of DO-eQTL gene.
@@ -144,8 +144,8 @@ prior <- compute_prior(raw_data, model_data)
 
 ## **INFIMA** model fitting
 
-```{r echo=FALSE}
-infima <- model_fitting(model_data, prior)
+```{r}
+infima <- model_fitting(model_data, prior, verbose = F)
 ```
 
 ```{r}
@@ -155,10 +155,10 @@ summary(infima)
 
 ## Analysis of the results
 
-After fitting the **INFIMA** model, we focus on the DO genes containing causal local-ATAC-QTL (FDR of 0.05). To maintain a reasonable credible set for each DO gene, we use two tuning parameters: cum.pprob and cred.set. cum.pprob stands for the minimum cumulative posterior probability required for the target credible set. cred.set stands for the maximum proportion of candidate SNPs allowed in the credible set.
+After fitting the **INFIMA** model, we focus on the DO genes containing causal local-ATAC-QTL (FDR of 0.05). To maintain a reasonable credible set for each DO gene, we use two tuning parameters: `cum.pprob` and `cred.set`. `cum.pprob` stands for the minimum cumulative posterior probability required for the target credible set. `cred.set` stands for the maximum proportion of candidate SNPs allowed in the credible set.
 
-```{r echo=FALSE}
-infima_results <- snp_link_gene(infima, raw_data, model_data, prior, fdr = 0.05, cum.pprob = 0.8, cred.set = 0.5)
+```{r}
+infima_results <- snp_link_gene(infima, raw_data, model_data, prior, fdr = 0.05, cum.pprob = 0.8, cred.set = 0.5, verbose = F)
 ```
 
 
@@ -167,7 +167,7 @@ summary(infima_results)
 ```
 
 
-The results of linking top local-ATAC-QTLs their target DO genes can be summarized by using as.data.frame} method. We will obtain a data frame summarizing the results with the following columns.
+The results of linking top local-ATAC-QTLs their target DO genes can be summarized by using `as.data.frame` method. We will obtain a data frame summarizing the results with the following columns.
 
 name          | explanation
 ------------- | ----------------------------------------
