@@ -9,16 +9,16 @@ Authors@R:
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.5.0)
-License: What license it uses
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.2
 Imports:
-    data.table,
-    GenomicRanges
-    doParallel
+    data.table (>= 1.12.0),
+    GenomicRanges (>= 1.32.3),
+    doParallel (>= 1.0.11)
 Suggests: 
-    knitr,
-    rmarkdown,
-    testthat
+    knitr (>= 1.26),
+    rmarkdown (>= 2.3),
+    testthat (>= 2.3.1)
 VignetteBuilder: knitr
