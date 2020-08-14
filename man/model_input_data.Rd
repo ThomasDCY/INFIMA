@@ -25,7 +25,7 @@ Default 0.2. See \code{\link{data_trinarize}}.}
 \item{n_cores}{The number of cores for parallel computing.
 Default = \code{detectCores() - 2}.}
 
-\item{verbose}{Print messages or not. 
+\item{verbose}{Print messages or not.
 Default \code{verbose = TRUE}.}
 }
 \value{

@@ -87,12 +87,12 @@ NULL
 #' @name infima_results
 #' @title infima_results data object
 #' @description
-#' It is a list with length equal to the total number
-#' of instances in the DO-eQTL data. \code{infima_results[[i]]} is \code{NULL} if the i-th DO gene does
-#' not pass the FDR cutoff. Otherwise, \code{infima_results[[i]]} contains two lists \code{input_data}
+#' \code{infima_results$infima} is an \code{infima} object.
+#' \code{infima_results$results} is a list with length equal to the total number
+#' of instances in the DO-eQTL data. \code{infima_results$results[[i]]} is \code{NULL} if the i-th DO gene does
+#' not pass the FDR cutoff. Otherwise, \code{infima_results$results[[i]]} contains two lists \code{input_data}
 #' and \code{output_data}.
-#'
-#'
+#' 
 #' \code{input_data} contains:
 #' \tabular{ll}{
 #' \code{Y} \tab raw DO-eQTL signal \cr

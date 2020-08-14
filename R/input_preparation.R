@@ -497,7 +497,7 @@ model_input_data <- function(raw_data = NULL,
     x$snp_index)
   
   if (verbose) {
-    cat("Time taken", proc.time()[3] - time.start[3])
+    cat("Time taken", proc.time()[3] - time.start[3], '\n')
   }
   
   model_data <- list(

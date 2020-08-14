@@ -18,7 +18,7 @@ compute_prior(
 
 \item{n_cores}{The number of cores for parallel computing.}
 
-\item{verbose}{Print messages or not. 
+\item{verbose}{Print messages or not.
 Default = \code{detectCores() - 2}.}
 }
 \value{
@@ -33,7 +33,7 @@ A prior data object.
 }
 }
 \description{
-For the candidate SNPs of each row of DO-eQTL data, 
+For the candidate SNPs of each row of DO-eQTL data,
 keep track of their the distance scores, footprinting annotations,
 correlations between local ATAC-seq signal and effect size,
 correlations between local ATAC-seq signal and gene expression.

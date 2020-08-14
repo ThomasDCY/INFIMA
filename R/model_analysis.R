@@ -19,9 +19,11 @@
 #' Default = \code{detectCores() - 2}.
 #'
 #'
-#' @return An \code{infima_results} object. It is a list with length equal to the total number
-#' of instances in the DO-eQTL data. \code{infima_results[[i]]} is \code{NULL} if the i-th DO gene does
-#' not pass the FDR cutoff. Otherwise, \code{infima_results[[i]]} contains two lists \code{input_data}
+#' @return An \code{infima_results} object. 
+#' \code{infima_results$infima} is an \code{infima} object.
+#' \code{infima_results$results} is a list with length equal to the total number
+#' of instances in the DO-eQTL data. \code{infima_results$results[[i]]} is \code{NULL} if the i-th DO gene does
+#' not pass the FDR cutoff. Otherwise, \code{infima_results$results[[i]]} contains two lists \code{input_data}
 #' and \code{output_data}.
 #'
 #' \code{input_data} contains:
@@ -348,22 +350,43 @@ query_input_data <- function(x,
   
   ind <- snps == snp_id
   
-  res <- list(
-    Y = input_data$Y,
-    Y.t = input_data$Y.t,
-    A = input_data$A[ind,],
-    A.t = input_data$A.t[ind,],
-    B = input_data$B,
-    B.avg = input_data$B.avg,
-    B.t = input_data$B.t,
-    D = input_data$D[ind,],
-    E.t = input_data$E.t[ind,],
-    do.eqtl = input_data$do.eqtl,
-    snpData = input_data$snpData[ind,],
-    snp_id = snp_id,
-    ensembl = ensembl,
-    qtl_marker = qtl_marker
-  )
+  if(length(ind) == 1){ #### fix degenerate cases
+    res <- list(
+      Y = input_data$Y,
+      Y.t = input_data$Y.t,
+      A = input_data$A,
+      A.t = input_data$A.t,
+      B = input_data$B,
+      B.avg = input_data$B.avg,
+      B.t = input_data$B.t,
+      D = input_data$D,
+      E.t = input_data$E.t,
+      do.eqtl = input_data$do.eqtl,
+      snpData = input_data$snpData,
+      snp_id = snp_id,
+      ensembl = ensembl,
+      qtl_marker = qtl_marker
+    )
+  }
+  
+  if(length(ind) > 1){
+    res <- list(
+      Y = input_data$Y,
+      Y.t = input_data$Y.t,
+      A = input_data$A[ind,],
+      A.t = input_data$A.t[ind,],
+      B = input_data$B,
+      B.avg = input_data$B.avg,
+      B.t = input_data$B.t,
+      D = input_data$D[ind,],
+      E.t = input_data$E.t[ind,],
+      do.eqtl = input_data$do.eqtl,
+      snpData = input_data$snpData[ind,],
+      snp_id = snp_id,
+      ensembl = ensembl,
+      qtl_marker = qtl_marker
+    )
+  }
   
   class(res) <- 'input_query'
   return(res)
@@ -434,7 +457,7 @@ summary.infima <- function(x, ...) {
   cat(paste0('b1 = (', paste(
     format(infima$beta, digits = 4), collapse = ', '
   ), ')\n'))
-  cat(paste('gamma =', format(infima$gamma, digits = 4)))
+  cat(paste('gamma =', format(infima$gamma, digits = 4), '\n'))
   
   summary <- list(
     a0 = infima$alpha.0,

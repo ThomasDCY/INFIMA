@@ -263,6 +263,7 @@ model_fitting <- function(model_data = NULL,
     beta.prev <- beta
   }
   
+  
   infima <- list(
     alpha = alpha,
     beta = beta,

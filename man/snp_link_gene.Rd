@@ -38,9 +38,11 @@ in the credible set. Default 0.5. Take values between 0 and 1.}
 Default = \code{detectCores() - 2}.}
 }
 \value{
-An \code{infima_results} object. It is a list with length equal to the total number
-of instances in the DO-eQTL data. \code{infima_results[[i]]} is \code{NULL} if the i-th DO gene does
-not pass the FDR cutoff. Otherwise, \code{infima_results[[i]]} contains two lists \code{input_data}
+An \code{infima_results} object. 
+\code{infima_results$infima} is an \code{infima} object.
+\code{infima_results$results} is a list with length equal to the total number
+of instances in the DO-eQTL data. \code{infima_results$results[[i]]} is \code{NULL} if the i-th DO gene does
+not pass the FDR cutoff. Otherwise, \code{infima_results$results[[i]]} contains two lists \code{input_data}
 and \code{output_data}.
 
 \code{input_data} contains:

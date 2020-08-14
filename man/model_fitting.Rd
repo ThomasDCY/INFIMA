@@ -20,23 +20,23 @@ model_fitting(
 \item{prior}{The output from \code{\link{compute_prior}}.}
 
 \item{alpha_init}{The initial parameters of alpha:
-The three-dimensional multinomial parameters for the generative model 
+The three-dimensional multinomial parameters for the generative model
 of normal strains \code{129, AJ, B6, NOD, NZO}.
 Default \code{alpha_init = c(0.6, 0.3, 0.1)}.}
 
 \item{beta_init}{The initial parameters of beta:
-The three-dimensional multinomial parameters for the generative model 
+The three-dimensional multinomial parameters for the generative model
 of wild strains \code{CAST, PWK, WSB}.
 Default \code{alpha_init = c(0.5, 0.4, 0.1)}.}
 
-\item{gamma_init}{The initial value of gamma: 
+\item{gamma_init}{The initial value of gamma:
 the grand probability of a DO gene to be causal.
 Default \code{gamma_init = 0.5}.}
 
-\item{max_iter}{The maximum iteration allowed. 
+\item{max_iter}{The maximum iteration allowed.
 Default \code{max_iter = 100}.}
 
-\item{verbose}{Print messages or not. 
+\item{verbose}{Print messages or not.
 Default \code{verbose = TRUE}.}
 }
 \value{
