@@ -4,7 +4,7 @@
 \name{footprint}
 \alias{footprint}
 \title{footprint}
-\format{a vector, the dimension of which equals to the number of local-ATAC-QTLs}
+\format{a vector, the dimension of which equals to the number of local-ATAC-MVs}
 \description{
 the footprint vector
 }

@@ -9,7 +9,7 @@ query_input_data(x, snp_id = NULL, ensembl = NULL, qtl_marker = NULL, ...)
 \arguments{
 \item{x}{The S3 class \code{infima_results}}
 
-\item{snp_id}{The query snp_id of local-ATAC-QTL}
+\item{snp_id}{The query snp_id of local-ATAC-MV}
 
 \item{ensembl}{The query ensembl column value of DO-eQTL data}
 

@@ -4,7 +4,7 @@
 \name{dist.rs}
 \alias{dist.rs}
 \title{dist.rs}
-\format{a vector, the dimension of which equals to the number of local-ATAC-QTLs}
+\format{a vector, the dimension of which equals to the number of local-ATAC-MVs}
 \description{
 the distance rank score component in the prior
 }

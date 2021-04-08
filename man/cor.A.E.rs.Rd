@@ -4,9 +4,9 @@
 \name{cor.A.E.rs}
 \alias{cor.A.E.rs}
 \title{cor.A.E.rs}
-\format{a vector, the dimension of which equals to the number of local-ATAC-QTLs}
+\format{a vector, the dimension of which equals to the number of local-ATAC-MVs}
 \description{
-the rank score of the correlation between ATAC-seq signal and gene expression
+the rank score of the correlation between ATAC-seq signal and founder genotype effect
 }
 \author{
 Chenyang Dong \email{cdong@stat.wisc.edu}

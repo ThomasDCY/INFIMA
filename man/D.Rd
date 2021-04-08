@@ -4,7 +4,7 @@
 \name{D}
 \alias{D}
 \title{D}
-\format{8-column matrix, each row correspond to a local-ATAC-QTL}
+\format{8-column matrix, each row correspond to a local-ATAC-MV}
 \description{
 the edit distance, absolute difference between DO and founder allelic effects
 }

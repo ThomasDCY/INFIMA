@@ -4,7 +4,7 @@
 \name{dist}
 \alias{dist}
 \title{dist}
-\format{a vector, the dimension of which equals to the number of local-ATAC-QTLs}
+\format{a vector, the dimension of which equals to the number of local-ATAC-MVs}
 \description{
 the distance score component in the prior
 }

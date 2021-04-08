@@ -19,15 +19,15 @@ as.data.frame(x)
 \value{
 a data frame containing the following colums:
 \tabular{ll}{
-\code{snp_id ... alt} \tab SNP information of the causal local-ATAC-QTLs \cr
+\code{snp_id ... alt} \tab SNP information of the causal local-ATAC-MVs \cr
 \code{ensembl ... lod} \tab DO-eQTL data: DO gene & marker information \cr
 \code{footprint} \tab the footprint information \cr
 \code{footprint.rs} \tab the footprint information rank score \cr
 \code{dist} \tab the distance score component in the prior \cr
 \code{dist.rs} \tab the distance rank score \cr
-\code{cor.A.E} \tab the Correlation between ATAC-seq signal and gene expression \cr
+\code{cor.A.E} \tab the Correlation between ATAC-seq signal and founder genotype effect \cr
 \code{cor.A.E.rs} \tab the cor.A.E rank score \cr
-\code{cor.A.B} \tab the Correlation between ATAC-seq signal and founder effect size \cr
+\code{cor.A.B} \tab the Correlation between ATAC-seq signal and gene expression \cr
 \code{cor.A.B.rs} \tab the cor.A.B rank score \cr
 \code{p} \tab the total number of candidates \cr
 \code{k} \tab the number of candidates in the credible set \cr

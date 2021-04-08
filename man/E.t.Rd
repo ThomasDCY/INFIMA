@@ -4,9 +4,9 @@
 \name{E.t}
 \alias{E.t}
 \title{E.t}
-\format{8-column matrix, each row correspond to a local-ATAC-QTL}
+\format{8-column matrix, each row correspond to a local-ATAC-MV}
 \description{
-the trinarized founder allelic effects
+the trinarized founder genotype effects
 }
 \author{
 Chenyang Dong \email{cdong@stat.wisc.edu}

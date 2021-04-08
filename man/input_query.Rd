@@ -16,9 +16,9 @@ A list of multi-omics input data correspond to the query (snp_id, ensembl, qtl_m
   \code{B.avg} \tab average founder gene expressions from all strains \cr
   \code{B.t} \tab average founder gene expressions from all strains (trinarized, \code{B6} as reference) \cr
   \code{D} \tab edit distance, the difference between Y.t and E.t \cr
-  \code{E.t} \tab founder allelic effects (trinarized, \code{B6} as reference) \cr
-  \code{snpData} \tab the information of the query local-ATAC-QTL \cr
-  \code{snp_id} \tab the SNP id of the query local-ATAC-QTL \cr
+  \code{E.t} \tab founder genotype effects (trinarized, \code{B6} as reference) \cr
+  \code{snpData} \tab the information of the query local-ATAC-MV \cr
+  \code{snp_id} \tab the SNP id of the query local-ATAC-MV \cr
   \code{ensembl} \tab the ensembl id of the query DO gene \cr
   \code{qtl_marker} \tab the name of the QTL marker of the query DO gene, a DO gene may correspond to multiple markers \cr
 }

@@ -1,7 +1,7 @@
 #' @name snp_link_gene
 #' @title Link SNPs to effector genes
 #'
-#' @description Analyze the outputs from INFIMA and link local-ATAC-QTLs to effector genes.
+#' @description Analyze the outputs from INFIMA and link local-ATAC-MVs to effector genes.
 #' Including the posterior probabilities, target genes, each piece of input information,
 #' and the relative ranks of each piece of information.
 #'
@@ -36,13 +36,13 @@
 #' \code{B.avg} \tab raw RNA-seq data (averaged) \cr
 #' \code{B.t} \tab trinarized RNA-seq data \cr
 #' \code{do.eqtl} \tab DO-eQTL data: DO gene & marker information \cr
-#' \code{snpData} \tab SNP information of causal local-ATAC-QTLs \cr
+#' \code{snpData} \tab SNP information of causal local-ATAC-MVs \cr
 #' \code{D} \tab the edit distance \cr
 #' \code{footprint} \tab the footprint information \cr
 #' \code{E.t} \tab the trinarized allelic effects \cr
 #' \code{dist} \tab the distance score component in the prior \cr
-#' \code{cor.A.E} \tab the Correlation between ATAC-seq signal and gene expression \cr
-#' \code{cor.A.B} \tab the Correlation betwwen ATAC-seq signal and founder effect size \cr
+#' \code{cor.A.E} \tab the Correlation between ATAC-seq signal and founder genotype effect \cr
+#' \code{cor.A.B} \tab the Correlation betwwen ATAC-seq signal and gene expression \cr
 #' \code{p} \tab the total number of candidates \cr
 #' \code{k} \tab the number of candidates in the credible set \cr
 #' }
@@ -129,14 +129,14 @@ snp_link_gene <-
     
     YY <- raw_data$YY # DO-eQTL signal
     AA <- raw_data$AA # ATAC-seq signal
-    EE <- raw_data$EE # local-ATAC-QTL genotype
+    EE <- raw_data$EE # local-ATAC-MV genotype
     rna.seq <- raw_data$rna.seq # RNA-seq data (all samples)
     BB <- raw_data$BB # RNA-seq data (averaged)
     FF <- raw_data$FF # footprint information
     do.eqtl <- raw_data$do.eqtl # DO-eQTL data
     snpData <- raw_data$snpData # the SNP information
     
-    E.g <- model_data$E.g # effect size, trinarized
+    E.g <- model_data$E.g # genotype effect size, trinarized
     Y.g <- model_data$Y.g # trinarized DO-eQTL signal
     A.g <- model_data$A.g # trinarized ATAC-seq signal
     F.g <- model_data$F.g # footprint information
@@ -144,12 +144,12 @@ snp_link_gene <-
     B.g <-
       model_data$B.g # trinarized founder RNA-seq gene expression
     snp_index <-
-      model_data$snp_index # the index of local-ATAC-QTLs in the original list
+      model_data$snp_index # the index of local-ATAC-MVs in the original list
     p.g <- model_data$p.g # the total number of candidates
     
     dist <- prior$dist # dist score
     cor.A.E <-
-      prior$cor.A.E # correlation between ATAC-seq signal and founder allelic effects
+      prior$cor.A.E # correlation between ATAC-seq signal and founder genotype effects
     cor.A.B <-
       prior$cor.A.B # correlation between ATAC-seq signal and founder gene expression
     
@@ -159,7 +159,7 @@ snp_link_gene <-
     # direct pprob approach cutoff
     
     
-    # for each local-ATAC-QTL, we record all the genes it is affecting based on INFIMA.
+    # for each local-ATAC-MV, we record all the genes it is affecting based on INFIMA.
     # We are keeping track of the do.eqtl gene
     
     registerDoParallel(cores = n_cores)
@@ -188,7 +188,7 @@ snp_link_gene <-
         }
         
         cutoff <- pprobs[k]
-        # indicators of causal local-ATAC-QTLs among candidates
+        # indicators of causal local-ATAC-MVs among candidates
         subset <- Z.g[[x]] >= cutoff
         
         # the SNP indices in the original list
@@ -213,13 +213,13 @@ snp_link_gene <-
           do.eqtl = do.eqtl[x],
           # DO-eQTL data: DO gene & marker information
           snpData = snpData[causal],
-          # SNP information of causal local-ATAC-QTLs
+          # SNP information of causal local-ATAC-MVs
           D = D.g[[x]][subset, ],
           # the edit distance
           footprint = FF[causal],
           # the footprint information
           E.t = E.g[[x]][subset, ],
-          # the trinarized allelic effects
+          # the trinarized genotype effects
           dist = dist[[x]][subset],
           # the distance score component in the prior
           cor.A.E = cor.A.E[[x]][subset],
@@ -283,7 +283,7 @@ snp_link_gene <-
 #' @description The S3 method for the class \code{infima_results}
 #'
 #' @param x The S3 class \code{infima_results}
-#' @param snp_id The query snp_id of local-ATAC-QTL
+#' @param snp_id The query snp_id of local-ATAC-MV
 #' @param ensembl The query ensembl column value of DO-eQTL data
 #' @param qtl_marker The query qtl_marker column value of DO-eQTL data
 #' @return an input_query class, which is a list of input data corresponding to the query
@@ -512,6 +512,9 @@ plot_input <- function(x, option = NULL, ...) {
     stop('Invalid value for the option argument!')
   }
   
+  strains <- c('129', 'AJ', 'B6', 'CAST',
+               'NOD', 'NZO', 'PWK', 'WSB')
+  
   colors <- c(
     rgb(240, 128, 128, maxColorValue = 255, alpha = 255),
     rgb(218, 165, 32, maxColorValue = 255, alpha = 255),
@@ -535,7 +538,7 @@ plot_input <- function(x, option = NULL, ...) {
       col = colors,
       pch = 19
     )
-    axis(1, at = 1:8, labels = names(x$Y))
+    axis(1, at = 1:8, labels = strains)
     
     plot(
       x$Y.t,
@@ -544,14 +547,19 @@ plot_input <- function(x, option = NULL, ...) {
       xlab = 'Strain',
       ylab = 'DO allele effect (trinarized)',
       col = colors,
-      pch = 19
+      pch = 19,
+      yaxt = 'n',
+      ylim = c(-1,1)
     )
-    axis(1, at = 1:8, labels = names(x$Y.t))
+    axis(1, at = 1:8, labels = strains)
+    axis(2, at = c(-1,0,1), labels = c('low', 'middle', 'high'))
     par(grid)
     
   }
   
   if (option == 2) {
+    grid <- par(mfrow = c(1, 2),
+                mar = c(1, 1, 1, 1) + 3)
     plot(
       x$A,
       main = '',
@@ -561,7 +569,7 @@ plot_input <- function(x, option = NULL, ...) {
       col = colors,
       pch = 19
     )
-    axis(1, at = 1:8, labels = names(x$A))
+    axis(1, at = 1:8, labels = strains)
     
     plot(
       x$A.t,
@@ -570,13 +578,18 @@ plot_input <- function(x, option = NULL, ...) {
       xlab = 'Strain',
       ylab = 'Local ATAC-seq signal (trinarized)',
       col = colors,
-      pch = 19
+      pch = 19,
+      yaxt = 'n',
+      ylim = c(-1,1)
     )
-    axis(1, at = 1:8, labels = names(x$A.t))
+    axis(1, at = 1:8, labels = strains)
+    axis(2, at = c(-1,0,1), labels = c('low', 'middle', 'high'))
     par(grid)
   }
   
   if (option == 3) {
+    grid <- par(mfrow = c(1, 2),
+                mar = c(1, 1, 1, 1) + 3)
     plot(
       x$B.avg,
       main = '',
@@ -586,7 +599,7 @@ plot_input <- function(x, option = NULL, ...) {
       col = colors,
       pch = 19
     )
-    axis(1, at = 1:8, labels = names(x$B.avg))
+    axis(1, at = 1:8, labels = strains)
     
     plot(
       x$B.t,
@@ -595,13 +608,18 @@ plot_input <- function(x, option = NULL, ...) {
       xlab = 'Strain',
       ylab = 'Founder gene expression (trinarized)',
       col = colors,
-      pch = 19
+      pch = 19,
+      yaxt = 'n',
+      ylim = c(-1,1)
     )
-    axis(1, at = 1:8, labels = names(x$B.t))
+    axis(1, at = 1:8, labels = strains)
+    axis(2, at = c(-1,0,1), labels = c('low', 'middle', 'high'))
     par(grid)
   }
   
   if (option == 4) {
+    grid <- par(mfrow = c(1, 2),
+                mar = c(1, 1, 1, 1) + 3)
     plot(
       x$E.t,
       main = '',
@@ -609,9 +627,12 @@ plot_input <- function(x, option = NULL, ...) {
       xlab = 'Strain',
       ylab = 'Founder allele effect (trinarized)',
       col = colors,
-      pch = 19
+      pch = 19,
+      yaxt = 'n',
+      ylim = c(-1,1)
     )
-    axis(1, at = 1:8, labels = names(x$E.t))
+    axis(1, at = 1:8, labels = strains)
+    axis(2, at = c(-1,0,1), labels = c('low', 'middle', 'high'))
     
     plot(
       x$D,
@@ -620,10 +641,11 @@ plot_input <- function(x, option = NULL, ...) {
       xlab = 'Strain',
       ylab = 'Edit distance',
       col = colors,
-      pch = 19
+      pch = 19,
+      yaxt = 'n'
     )
-    axis(1, at = 1:8, labels = names(x$E.t))
-    
+    axis(1, at = 1:8, labels = strains)
+    axis(2, at = -2:2)
     par(grid)
   }
 }
@@ -646,15 +668,15 @@ as.data.frame <- function(x) {
 #' @param ... Additional arguments
 #' @return a data frame containing the following colums:
 #' \tabular{ll}{
-#' \code{snp_id ... alt} \tab SNP information of the causal local-ATAC-QTLs \cr
+#' \code{snp_id ... alt} \tab SNP information of the causal local-ATAC-MVs \cr
 #' \code{ensembl ... lod} \tab DO-eQTL data: DO gene & marker information \cr
 #' \code{footprint} \tab the footprint information \cr
 #' \code{footprint.rs} \tab the footprint information rank score \cr
 #' \code{dist} \tab the distance score component in the prior \cr
 #' \code{dist.rs} \tab the distance rank score \cr
-#' \code{cor.A.E} \tab the Correlation between ATAC-seq signal and gene expression \cr
+#' \code{cor.A.E} \tab the Correlation between ATAC-seq signal and founder genotype effect \cr
 #' \code{cor.A.E.rs} \tab the cor.A.E rank score \cr
-#' \code{cor.A.B} \tab the Correlation between ATAC-seq signal and founder effect size \cr
+#' \code{cor.A.B} \tab the Correlation between ATAC-seq signal and gene expression \cr
 #' \code{cor.A.B.rs} \tab the cor.A.B rank score \cr
 #' \code{p} \tab the total number of candidates \cr
 #' \code{k} \tab the number of candidates in the credible set \cr

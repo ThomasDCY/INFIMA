@@ -55,13 +55,13 @@ and \code{output_data}.
 \code{B.avg} \tab raw RNA-seq data (averaged) \cr
 \code{B.t} \tab trinarized RNA-seq data \cr
 \code{do.eqtl} \tab DO-eQTL data: DO gene & marker information \cr
-\code{snpData} \tab SNP information of causal local-ATAC-QTLs \cr
+\code{snpData} \tab SNP information of causal local-ATAC-MVs \cr
 \code{D} \tab the edit distance \cr
 \code{footprint} \tab the footprint information \cr
 \code{E.t} \tab the trinarized allelic effects \cr
 \code{dist} \tab the distance score component in the prior \cr
-\code{cor.A.E} \tab the Correlation between ATAC-seq signal and gene expression \cr
-\code{cor.A.B} \tab the Correlation betwwen ATAC-seq signal and founder effect size \cr
+\code{cor.A.E} \tab the Correlation between ATAC-seq signal and founder genotype effect \cr
+\code{cor.A.B} \tab the Correlation betwwen ATAC-seq signal and gene expression \cr
 \code{p} \tab the total number of candidates \cr
 \code{k} \tab the number of candidates in the credible set \cr
 }
@@ -77,7 +77,7 @@ and \code{output_data}.
 }
 }
 \description{
-Analyze the outputs from INFIMA and link local-ATAC-QTLs to effector genes.
+Analyze the outputs from INFIMA and link local-ATAC-MVs to effector genes.
 Including the posterior probabilities, target genes, each piece of input information,
 and the relative ranks of each piece of information.
 }

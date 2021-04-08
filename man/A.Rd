@@ -4,7 +4,7 @@
 \name{A}
 \alias{A}
 \title{A}
-\format{8-column matrix, each row correspond to a local-ATAC-QTL}
+\format{8-column matrix, each row correspond to a local-ATAC-MV}
 \description{
 local ATAC-seq signal
 }

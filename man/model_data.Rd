@@ -8,7 +8,7 @@
 \description{
 The processed input data.
 \tabular{ll}{
-\code{E.g} \tab Trinarized effect size of candidate SNPs with respect to DO gene. \cr
+\code{E.g} \tab Trinarized genotype effect size of candidate SNPs with respect to DO gene. \cr
 \code{Y.g} \tab Trinarized DO-eQTL allelic dependence. \cr
 \code{A.g} \tab Trinarized local ATAC-seq signal for candidate SNPs. \cr
 \code{F.g} \tab Footprint annotations for candidate SNPs. \cr

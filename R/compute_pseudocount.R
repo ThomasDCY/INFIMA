@@ -17,8 +17,8 @@
 #' \code{PI} \tab The overall prior term. \cr
 #' \code{dist} \tab The distance score. \cr
 #' \code{F.g} \tab The footprint annotation. \cr
-#' \code{cor.A.B} \tab The Correlation betwwen ATAC-seq signal and founder effect size. \cr
-#' \code{cor.A.E} \tab The Correlation between ATAC-seq signal and gene expression. \cr
+#' \code{cor.A.B} \tab The Correlation betwwen ATAC-seq signal and gene expression. \cr
+#' \code{cor.A.E} \tab The Correlation between ATAC-seq signal and founder genotype effect. \cr
 #' }
 #' @examples
 #' data('example-10-genes')
@@ -96,7 +96,7 @@ compute_prior <- function(raw_data = NULL,
   r <- foreach(g = 1:G) %dopar% {
     # print(g)
     
-    # if no local-ATAC-QTL, then return NULL
+    # if no local-ATAC-MV, then return NULL
     PI <- NULL
     dist <- NULL
     cor.A.E <- NULL
@@ -108,7 +108,7 @@ compute_prior <- function(raw_data = NULL,
       cor.A.E <- rep(0, p.g[g])
       cor.A.B <- rep(0, p.g[g])
       
-      # Distance between TSS and ATAC-QTL
+      # Distance between TSS and ATAC-MV
       if (do.eqtl$strand[g] == '+') {
         tss <- c(do.eqtl$start[g] - 5000, do.eqtl$start[g] + 500)
       }
@@ -133,7 +133,7 @@ compute_prior <- function(raw_data = NULL,
         
         # correlation of founder RNA-seq vs ATAC-seq score
         cor.A.B[k] <- cor(BB[g,], AA[snp_index[[g]][k],])
-        # correlation of ATAC-seq and allelic effect of founder gene
+        # correlation of ATAC-seq and genotype effect of founder gene
         cor.A.E[k] <-
           cor(AA[snp_index[[g]][k],], EE[snp_index[[g]][k],])
         
@@ -143,7 +143,7 @@ compute_prior <- function(raw_data = NULL,
         PI[k] <- PI[k] + F.g[[g]][k]
         # correlation of founder RNA-seq vs ATAC-seq score
         PI[k] <- PI[k] + abs(cor.A.B[k])
-        # correlation of ATAC-seq and SNP genotype
+        # correlation of ATAC-seq and SNP genotype effect
         PI[k] <- PI[k] + abs(cor.A.E[k])
       }
     }

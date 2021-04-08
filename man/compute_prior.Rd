@@ -28,8 +28,8 @@ A prior data object.
 \code{PI} \tab The overall prior term. \cr
 \code{dist} \tab The distance score. \cr
 \code{F.g} \tab The footprint annotation. \cr
-\code{cor.A.B} \tab The Correlation betwwen ATAC-seq signal and founder effect size. \cr
-\code{cor.A.E} \tab The Correlation between ATAC-seq signal and gene expression. \cr
+\code{cor.A.B} \tab The Correlation betwwen ATAC-seq signal and gene expression. \cr
+\code{cor.A.E} \tab The Correlation between ATAC-seq signal and founder genotype effect. \cr
 }
 }
 \description{

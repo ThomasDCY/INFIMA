@@ -4,7 +4,7 @@
 \name{Z.rs}
 \alias{Z.rs}
 \title{Z.rs}
-\format{a vector, the dimension of which equals to the number of local-ATAC-QTLs}
+\format{a vector, the dimension of which equals to the number of local-ATAC-MVs}
 \description{
 the rank score of the posterior probabilities of the output
 }

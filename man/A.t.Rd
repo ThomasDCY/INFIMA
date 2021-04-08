@@ -4,7 +4,7 @@
 \name{A.t}
 \alias{A.t}
 \title{A.t}
-\format{8-column matrix, each row correspond to a local-ATAC-QTL}
+\format{8-column matrix, each row correspond to a local-ATAC-MV}
 \description{
 trinarized local ATAC-seq signal
 }

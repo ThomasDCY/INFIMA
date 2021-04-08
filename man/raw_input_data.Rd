@@ -62,9 +62,9 @@ local ATAC-seq signal of the SNP.}
 \value{
 A raw_data object including:
 \tabular{ll}{
-\code{YY} \tab DO-eQTL allelic dependence matrix. \cr
+\code{YY} \tab DO-eQTL allele effect matrix. \cr
 \code{AA} \tab Local ATAC-seq signal matrix. \cr
-\code{EE} \tab Local-ATAC-QTL genotypes. \cr
+\code{EE} \tab Local-ATAC-MV genotypes. \cr
 \code{rna.seq} \tab Full founder RNA-seq data matrix. \cr
 \code{BB} \tab Averaged founder RNA-seq data matrix. \cr
 \code{FF} \tab Footprint annnotation vector. \cr
