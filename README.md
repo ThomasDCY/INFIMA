@@ -65,6 +65,6 @@ See the vignette for more information!
 
 ### Reference
 
-**C. Dong**, S. Simonett, S. Shin, D. Stapleton, K. Schueler, G. Churchill, L. Lu, X. Liu, F. Jin, Y. Li, A. Attie, M. Keller, and **S. Keleş**, "INFIMA leverages multi-omics model organism data to identify effector genes of human GWAS variants", *Manuscript*.
+**C. Dong**, S. Simonett, S. Shin, D. Stapleton, K. Schueler, G. Churchill, L. Lu, X. Liu, F. Jin, Y. Li, A. Attie, M. Keller, and **S. Keles**, "INFIMA leverages multi-omics model organism data to identify effector genes of human GWAS variants".
 
 
